@@ -17,14 +17,14 @@
 import Foundation
 
 public protocol VVIPCDelegate: class {
-    open func vvIPCDataRecieve(_ str: String)
-    open func vvIPCDataRecieveError(_ error: Error) // TODO: some errors
-    open func vvIPCNotificationReceived(_ str: String, userInfoData: String)
+    func vvIPCDataRecieve(_ str: String)
+    func vvIPCDataRecieveError(_ error: Error) // TODO: some errors
+    func vvIPCNotificationReceived(_ str: String, userInfoData: String)
 }
 
 // should be on main target
 extension VVIPCDelegate {
-    open func vvIPCNotificationReceived(_ name: String, userInfoData: String) {
+    public func vvIPCNotificationReceived(_ name: String, userInfoData: String) {
         print("===== post name: \(name) userInfoData: \(userInfoData)")
         let userInfo = ["data": userInfoData]
         NotificationCenter.default.post(name: Notification.Name(name), object: self, userInfo: userInfo)
@@ -32,7 +32,7 @@ extension VVIPCDelegate {
 }
 
 open class VVIPC {
-    open init() {
+    public init() {
         
     }
     
