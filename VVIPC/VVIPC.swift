@@ -25,7 +25,7 @@ public protocol VVIPCDelegate: class {
 // should be on main target
 extension VVIPCDelegate {
     public func vvIPCNotificationReceived(_ name: String, userInfoData: String) {
-        print("===== post name: \(name) userInfoData: \(userInfoData)")
+        print("post name: \(name) userInfoData: \(userInfoData)")
         let userInfo = ["data": userInfoData]
         NotificationCenter.default.post(name: Notification.Name(name), object: self, userInfo: userInfo)
     }
@@ -61,7 +61,7 @@ open class VVIPC {
         
         str.utf8CString.withUnsafeBufferPointer() {
             let s = Darwin.send(self.clientSocket, $0.baseAddress!, $0.count - 1, 0)
-            print("==again==== s: \(s) self.clientSocket: \(self.clientSocket)")
+            print("s: \(s) self.clientSocket: \(self.clientSocket)")
         }
     }
     
@@ -157,10 +157,10 @@ open class VVIPC {
         let info = targetInfo
         
         self.clientSocket = Darwin.socket(info!.pointee.ai_family, info!.pointee.ai_socktype, info!.pointee.ai_protocol)
-        print("====== self.clientSocket: \(self.clientSocket)")
+        print("self.clientSocket: \(self.clientSocket)")
         try? self.ignoreSIGPIPE(on: self.clientSocket)
         status = Darwin.connect(self.clientSocket, info!.pointee.ai_addr, info!.pointee.ai_addrlen)
-        print("===== status: \(status) self.clientSocker: \(self.clientSocket)")
+        print("status: \(status) self.clientSocker: \(self.clientSocket)")
         if targetInfo != nil {
             freeaddrinfo(targetInfo)
         }
@@ -174,17 +174,17 @@ open class VVIPC {
             recvFlags |= Int32(MSG_DONTWAIT)
         }
         self.readBuffer.initialize(repeating: 0x0, count: 4096)
-        print("===== recvFlags: \(recvFlags) clientSocket: \(self.clientSocket)")
+        print("recvFlags: \(recvFlags) clientSocket: \(self.clientSocket)")
         
         DispatchQueue.global(qos: .default).async {
             var recvCount: Int = 0 // should always return greater then 0
             repeat {
-                print("===== coutn........")
+                
                 recvCount = Darwin.recv(self.clientSocket, self.readBuffer, 4096, recvFlags)
                 if let data = NSMutableData(capacity: 4096) {
                     data.append(self.readBuffer, length: recvCount)
                     data.append(self.readStorage.bytes, length: self.readStorage.length)
-                    print("===== coutn: \(recvCount) \(data)")
+                    
                     if let str = NSString(bytes: data.bytes, length: data.length, encoding: String.Encoding.utf8.rawValue) {
                         if str.hasPrefix("postNoti|-|") {
                             let arr = str.components(separatedBy: "|-|")
@@ -194,7 +194,7 @@ open class VVIPC {
                             self.delegate?.vvIPCDataRecieve(str as String)
                         }
                         
-                        print("===== str: \(str)")
+                        
                     }
                     
                 }
@@ -204,7 +204,7 @@ open class VVIPC {
             } while recvCount > 0
             
         }
-        print("===== done count:")
+        
         
         
     }
