@@ -1,13 +1,22 @@
-//
-//  VVIPC.swift
-//  VuduIosClient
-//
-//  Created by Pinghsien Lin on 9/27/18.
-//
+/*
+ * Copyright (C) 2018 VUDU inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 import Foundation
 
-protocol VVIPCDelegate: class {
+public protocol VVIPCDelegate: class {
     func vvIPCDataRecieve(_ str: String)
     func vvIPCDataRecieveError(_ error: Error) // TODO: some errors
     func vvIPCNotificationReceived(_ str: String, userInfoData: String)
@@ -22,7 +31,7 @@ extension VVIPCDelegate {
     }
 }
 
-class VVIPC {
+open class VVIPC {
     weak var delegate: VVIPCDelegate? = nil
     
     var socketfd: Int32 = -1
@@ -32,13 +41,13 @@ class VVIPC {
     var readBuffer: UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>.allocate(capacity: 4096)
     var readStorage: NSMutableData = NSMutableData(capacity: 4096)!
     
-    func serverStart() {
+    open func serverStart() {
         DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
             self.listensocket()
         }
     }
     
-    func serverSend(_ str: String) {
+    open func serverSend(_ str: String) {
         if self.clientSocket == -1 {
             print("fatal error!")
             return
@@ -52,7 +61,7 @@ class VVIPC {
         }
     }
     
-    func postNotification(_ str: String, userInfoData: String = "") {
+    open func postNotification(_ str: String, userInfoData: String = "") {
         // I know... it should be a better way of doing this.
         self.serverSend("postNoti|-|\(str)|-|\(userInfoData)")
     }
@@ -63,7 +72,7 @@ class VVIPC {
     
     
     
-    func listensocket() {
+    open func listensocket() {
         self.socketfd = socket(2, 1, 6)
         print(self.socketfd)
         do {
@@ -123,7 +132,7 @@ class VVIPC {
         
     }
     
-    func conn(delegate: VVIPCDelegate?) {
+    open func conn(delegate: VVIPCDelegate?) {
         self.delegate = delegate
         
         var hints = addrinfo(
@@ -155,7 +164,7 @@ class VVIPC {
         checkClientReceive()
     }
     
-    func checkClientReceive() {
+    open func checkClientReceive() {
         var recvFlags: Int32 = 0
         if self.readStorage.length > 0 {
             recvFlags |= Int32(MSG_DONTWAIT)
