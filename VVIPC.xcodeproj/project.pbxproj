@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		098539B4215EE13E00B96FB7 /* VVIPC_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098539AB215EE13E00B96FB7 /* VVIPC_tvOS.framework */; };
+		098539B9215EE13E00B96FB7 /* VVIPC_tvOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098539B8215EE13E00B96FB7 /* VVIPC_tvOSTests.swift */; };
+		098539BB215EE13E00B96FB7 /* VVIPC_tvOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 098539AD215EE13E00B96FB7 /* VVIPC_tvOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		09F6A6A5215ED9D6005AABCC /* VVIPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09F6A69B215ED9D6005AABCC /* VVIPC.framework */; };
 		09F6A6AA215ED9D6005AABCC /* VVIPCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F6A6A9215ED9D6005AABCC /* VVIPCTests.swift */; };
 		09F6A6AC215ED9D6005AABCC /* VVIPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 09F6A69E215ED9D6005AABCC /* VVIPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -14,6 +17,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		098539B5215EE13E00B96FB7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 09F6A692215ED9D6005AABCC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 098539AA215EE13E00B96FB7;
+			remoteInfo = VVIPC_tvOS;
+		};
 		09F6A6A6215ED9D6005AABCC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 09F6A692215ED9D6005AABCC /* Project object */;
@@ -24,6 +34,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		098539AB215EE13E00B96FB7 /* VVIPC_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVIPC_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		098539AD215EE13E00B96FB7 /* VVIPC_tvOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VVIPC_tvOS.h; sourceTree = "<group>"; };
+		098539AE215EE13E00B96FB7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		098539B3215EE13E00B96FB7 /* VVIPC_tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VVIPC_tvOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		098539B8215EE13E00B96FB7 /* VVIPC_tvOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VVIPC_tvOSTests.swift; sourceTree = "<group>"; };
+		098539BA215EE13E00B96FB7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		09F6A69B215ED9D6005AABCC /* VVIPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVIPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		09F6A69E215ED9D6005AABCC /* VVIPC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VVIPC.h; sourceTree = "<group>"; };
 		09F6A69F215ED9D6005AABCC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -34,6 +50,21 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		098539A8215EE13E00B96FB7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		098539B0215EE13E00B96FB7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				098539B4215EE13E00B96FB7 /* VVIPC_tvOS.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09F6A698215ED9D6005AABCC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -52,11 +83,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		098539AC215EE13E00B96FB7 /* VVIPC_tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				098539AD215EE13E00B96FB7 /* VVIPC_tvOS.h */,
+				098539AE215EE13E00B96FB7 /* Info.plist */,
+			);
+			path = VVIPC_tvOS;
+			sourceTree = "<group>";
+		};
+		098539B7215EE13E00B96FB7 /* VVIPC_tvOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				098539B8215EE13E00B96FB7 /* VVIPC_tvOSTests.swift */,
+				098539BA215EE13E00B96FB7 /* Info.plist */,
+			);
+			path = VVIPC_tvOSTests;
+			sourceTree = "<group>";
+		};
 		09F6A691215ED9D6005AABCC = {
 			isa = PBXGroup;
 			children = (
 				09F6A69D215ED9D6005AABCC /* VVIPC */,
 				09F6A6A8215ED9D6005AABCC /* VVIPCTests */,
+				098539AC215EE13E00B96FB7 /* VVIPC_tvOS */,
+				098539B7215EE13E00B96FB7 /* VVIPC_tvOSTests */,
 				09F6A69C215ED9D6005AABCC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -66,6 +117,8 @@
 			children = (
 				09F6A69B215ED9D6005AABCC /* VVIPC.framework */,
 				09F6A6A4215ED9D6005AABCC /* VVIPCTests.xctest */,
+				098539AB215EE13E00B96FB7 /* VVIPC_tvOS.framework */,
+				098539B3215EE13E00B96FB7 /* VVIPC_tvOSTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -92,6 +145,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		098539A6215EE13E00B96FB7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				098539BB215EE13E00B96FB7 /* VVIPC_tvOS.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09F6A696215ED9D6005AABCC /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -103,6 +164,42 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		098539AA215EE13E00B96FB7 /* VVIPC_tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 098539BC215EE13E00B96FB7 /* Build configuration list for PBXNativeTarget "VVIPC_tvOS" */;
+			buildPhases = (
+				098539A6215EE13E00B96FB7 /* Headers */,
+				098539A7215EE13E00B96FB7 /* Sources */,
+				098539A8215EE13E00B96FB7 /* Frameworks */,
+				098539A9215EE13E00B96FB7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VVIPC_tvOS;
+			productName = VVIPC_tvOS;
+			productReference = 098539AB215EE13E00B96FB7 /* VVIPC_tvOS.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		098539B2215EE13E00B96FB7 /* VVIPC_tvOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 098539BF215EE13E00B96FB7 /* Build configuration list for PBXNativeTarget "VVIPC_tvOSTests" */;
+			buildPhases = (
+				098539AF215EE13E00B96FB7 /* Sources */,
+				098539B0215EE13E00B96FB7 /* Frameworks */,
+				098539B1215EE13E00B96FB7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				098539B6215EE13E00B96FB7 /* PBXTargetDependency */,
+			);
+			name = VVIPC_tvOSTests;
+			productName = VVIPC_tvOSTests;
+			productReference = 098539B3215EE13E00B96FB7 /* VVIPC_tvOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		09F6A69A215ED9D6005AABCC /* VVIPC */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 09F6A6AF215ED9D6005AABCC /* Build configuration list for PBXNativeTarget "VVIPC" */;
@@ -149,6 +246,12 @@
 				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = "Pinghsien Lin";
 				TargetAttributes = {
+					098539AA215EE13E00B96FB7 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+					098539B2215EE13E00B96FB7 = {
+						CreatedOnToolsVersion = 10.1;
+					};
 					09F6A69A215ED9D6005AABCC = {
 						CreatedOnToolsVersion = 10.1;
 						LastSwiftMigration = 1010;
@@ -172,11 +275,27 @@
 			targets = (
 				09F6A69A215ED9D6005AABCC /* VVIPC */,
 				09F6A6A3215ED9D6005AABCC /* VVIPCTests */,
+				098539AA215EE13E00B96FB7 /* VVIPC_tvOS */,
+				098539B2215EE13E00B96FB7 /* VVIPC_tvOSTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		098539A9215EE13E00B96FB7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		098539B1215EE13E00B96FB7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09F6A699215ED9D6005AABCC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -194,6 +313,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		098539A7215EE13E00B96FB7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		098539AF215EE13E00B96FB7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				098539B9215EE13E00B96FB7 /* VVIPC_tvOSTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09F6A697215ED9D6005AABCC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -213,6 +347,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		098539B6215EE13E00B96FB7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 098539AA215EE13E00B96FB7 /* VVIPC_tvOS */;
+			targetProxy = 098539B5215EE13E00B96FB7 /* PBXContainerItemProxy */;
+		};
 		09F6A6A7215ED9D6005AABCC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 09F6A69A215ED9D6005AABCC /* VVIPC */;
@@ -221,6 +360,100 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		098539BD215EE13E00B96FB7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 22CM76897V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = VVIPC_tvOS/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "vudu.VVIPC-tvOS";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		098539BE215EE13E00B96FB7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 22CM76897V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = VVIPC_tvOS/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "vudu.VVIPC-tvOS";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		098539C0215EE13E00B96FB7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 22CM76897V;
+				INFOPLIST_FILE = VVIPC_tvOSTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "vudu.VVIPC-tvOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 12.1;
+			};
+			name = Debug;
+		};
+		098539C1215EE13E00B96FB7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 22CM76897V;
+				INFOPLIST_FILE = VVIPC_tvOSTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "vudu.VVIPC-tvOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 12.1;
+			};
+			name = Release;
+		};
 		09F6A6AD215ED9D6005AABCC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -273,7 +506,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -331,7 +564,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -437,6 +670,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		098539BC215EE13E00B96FB7 /* Build configuration list for PBXNativeTarget "VVIPC_tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				098539BD215EE13E00B96FB7 /* Debug */,
+				098539BE215EE13E00B96FB7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		098539BF215EE13E00B96FB7 /* Build configuration list for PBXNativeTarget "VVIPC_tvOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				098539C0215EE13E00B96FB7 /* Debug */,
+				098539C1215EE13E00B96FB7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		09F6A695215ED9D6005AABCC /* Build configuration list for PBXProject "VVIPC" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
