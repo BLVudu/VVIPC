@@ -30,10 +30,37 @@ extension VVIPCDelegate {
         NotificationCenter.default.post(name: Notification.Name(name), object: self, userInfo: userInfo)
     }
 }
+public struct Error: Swift.Error, CustomStringConvertible {
+    let reason: String
+    init(_ reason: String) {
+        self.reason = reason
+    }
+    public var description: String {
+        return "Error: \(self.reason)"
+    }
+}
+
 
 open class VVIPC {
     public init() {
         
+    }
+    
+    deinit {
+
+        if self.socketfd > 0 {
+            _ = Darwin.shutdown(self.socketfd, Int32(SHUT_RDWR))
+        }
+
+        if self.clientSocket > 0 {
+            _ = Darwin.close(self.clientSocket)
+        }
+
+        self.socketfd = -1
+        self.clientSocket = -1
+
+        self.readBuffer.deallocate()
+        print("deinit!!")
     }
     
     weak var delegate: VVIPCDelegate? = nil
@@ -46,8 +73,10 @@ open class VVIPC {
     var readStorage: NSMutableData = NSMutableData(capacity: 4096)!
     
     open func serverStart() {
-        DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
-            self.listensocket()
+        self.listen()
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.acceptingClientSocket()
         }
     }
     
@@ -74,10 +103,13 @@ open class VVIPC {
         
     }
     
-    
-    
-    open func listensocket() {
-        self.socketfd = socket(2, 1, 6)
+    func listen() {
+        // Int32(AF_INET) = 2
+        // SOCK_STREAM = 1
+        // Int32(IPPROTO_TCP) = 6
+        // IPv4 TCP
+        self.socketfd = socket(Int32(AF_INET), SOCK_STREAM, Int32(IPPROTO_TCP))
+        
         print(self.socketfd)
         do {
             try self.ignoreSIGPIPE(on: self.socketfd)
@@ -103,7 +135,7 @@ open class VVIPC {
         print("status \(status)")
         
         let info = targetInfo
-
+        
         if Darwin.bind(self.socketfd, info!.pointee.ai_addr, info!.pointee.ai_addrlen) == 0 {
             
             
@@ -111,16 +143,24 @@ open class VVIPC {
         
         print(Int(littleEndian: 42) == 42)
         
-        let a = listen(self.socketfd, Int32(10))
+        let a = Darwin.listen(self.socketfd, Int32(10))
         print("listen: \(a)")
+    }
+    
+    open func acceptingClientSocket() {
         
-        var addressStorage = sockaddr_storage()
-        var addressStorageLength = socklen_t(MemoryLayout.size(ofValue: addressStorage))
-        withUnsafeMutablePointer(to: &addressStorage) {
-            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { addressPointer in
-                withUnsafeMutablePointer(to: &addressStorageLength) { addressLengthPointer in
+        
+        var addrStorage = sockaddr_storage()
+        var length = socklen_t(MemoryLayout.size(ofValue: addrStorage))
+        withUnsafeMutablePointer(to: &addrStorage) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { addrPointer in
+                withUnsafeMutablePointer(to: &length) { lengthPointer in
                     
-                    let fd = Darwin.accept(self.socketfd, addressPointer, addressLengthPointer)
+                    let fd = Darwin.accept(self.socketfd, addrPointer, lengthPointer)
+                    if fd < 0 {
+                        print("Error: Socket accept failed.")
+                        return
+                    }
                     
                     do {
                         self.clientSocket = fd

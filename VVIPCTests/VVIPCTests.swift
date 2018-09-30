@@ -9,7 +9,16 @@
 import XCTest
 @testable import VVIPC
 
-class VVIPCTests: XCTestCase {
+
+
+class VVIPCTests: XCTestCase, VVIPCDelegate {
+    
+    func vvIPCDataRecieve(_ str: String) {
+        print("vvIPCDataRecieve: \(str)")
+    }
+    func vvIPCDataRecieveError(_ error: Error) {
+        
+    }
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -20,8 +29,19 @@ class VVIPCTests: XCTestCase {
     }
 
     func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        let server = VVServer()
+        server.start()
+        sleep(1)
+        let client = VVClient()
+        client.connect(delegate: self)
+        client.checkClientReceive()
+        server.serverSend("asdf")
+//        let vvipc = VVIPC()
+//        vvipc.serverStart()
+//        sleep(2)
+//        print(123)
+//        print(123)
+//        print(123)
     }
 
     func testPerformanceExample() {

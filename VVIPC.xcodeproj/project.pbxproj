@@ -11,6 +11,16 @@
 		098539B9215EE13E00B96FB7 /* VVIPC_tvOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098539B8215EE13E00B96FB7 /* VVIPC_tvOSTests.swift */; };
 		098539BB215EE13E00B96FB7 /* VVIPC_tvOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 098539AD215EE13E00B96FB7 /* VVIPC_tvOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		098539C5215EE43100B96FB7 /* VVIPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F6A6B5215EDA22005AABCC /* VVIPC.swift */; };
+		098539C92160AC1600B96FB7 /* VVServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098539C82160AC1600B96FB7 /* VVServer.swift */; };
+		098539CA2160AC1600B96FB7 /* VVServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098539C82160AC1600B96FB7 /* VVServer.swift */; };
+		098539CB2160AC1600B96FB7 /* VVServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098539C82160AC1600B96FB7 /* VVServer.swift */; };
+		098539CC2160AC1600B96FB7 /* VVServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098539C82160AC1600B96FB7 /* VVServer.swift */; };
+		098539CD2160AC2400B96FB7 /* VVIPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F6A6B5215EDA22005AABCC /* VVIPC.swift */; };
+		098539CE2160AC2500B96FB7 /* VVIPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F6A6B5215EDA22005AABCC /* VVIPC.swift */; };
+		098539D02160AC3C00B96FB7 /* VVClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098539CF2160AC3C00B96FB7 /* VVClient.swift */; };
+		098539D12160AC3C00B96FB7 /* VVClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098539CF2160AC3C00B96FB7 /* VVClient.swift */; };
+		098539D22160AC3C00B96FB7 /* VVClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098539CF2160AC3C00B96FB7 /* VVClient.swift */; };
+		098539D32160AC3C00B96FB7 /* VVClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098539CF2160AC3C00B96FB7 /* VVClient.swift */; };
 		09F6A6A5215ED9D6005AABCC /* VVIPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09F6A69B215ED9D6005AABCC /* VVIPC.framework */; };
 		09F6A6AA215ED9D6005AABCC /* VVIPCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F6A6A9215ED9D6005AABCC /* VVIPCTests.swift */; };
 		09F6A6AC215ED9D6005AABCC /* VVIPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 09F6A69E215ED9D6005AABCC /* VVIPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -41,6 +51,8 @@
 		098539B3215EE13E00B96FB7 /* VVIPC_tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VVIPC_tvOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		098539B8215EE13E00B96FB7 /* VVIPC_tvOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VVIPC_tvOSTests.swift; sourceTree = "<group>"; };
 		098539BA215EE13E00B96FB7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		098539C82160AC1600B96FB7 /* VVServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VVServer.swift; sourceTree = "<group>"; };
+		098539CF2160AC3C00B96FB7 /* VVClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VVClient.swift; sourceTree = "<group>"; };
 		09F6A69B215ED9D6005AABCC /* VVIPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVIPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		09F6A69E215ED9D6005AABCC /* VVIPC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VVIPC.h; sourceTree = "<group>"; };
 		09F6A69F215ED9D6005AABCC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -129,6 +141,8 @@
 			children = (
 				09F6A69E215ED9D6005AABCC /* VVIPC.h */,
 				09F6A6B5215EDA22005AABCC /* VVIPC.swift */,
+				098539C82160AC1600B96FB7 /* VVServer.swift */,
+				098539CF2160AC3C00B96FB7 /* VVClient.swift */,
 				09F6A69F215ED9D6005AABCC /* Info.plist */,
 			);
 			path = VVIPC;
@@ -318,6 +332,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				098539CB2160AC1600B96FB7 /* VVServer.swift in Sources */,
+				098539D22160AC3C00B96FB7 /* VVClient.swift in Sources */,
 				098539C5215EE43100B96FB7 /* VVIPC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -326,6 +342,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				098539D32160AC3C00B96FB7 /* VVClient.swift in Sources */,
+				098539CE2160AC2500B96FB7 /* VVIPC.swift in Sources */,
+				098539CC2160AC1600B96FB7 /* VVServer.swift in Sources */,
 				098539B9215EE13E00B96FB7 /* VVIPC_tvOSTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -334,6 +353,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				098539C92160AC1600B96FB7 /* VVServer.swift in Sources */,
+				098539D02160AC3C00B96FB7 /* VVClient.swift in Sources */,
 				09F6A6B6215EDA22005AABCC /* VVIPC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -342,6 +363,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				098539D12160AC3C00B96FB7 /* VVClient.swift in Sources */,
+				098539CD2160AC2400B96FB7 /* VVIPC.swift in Sources */,
+				098539CA2160AC1600B96FB7 /* VVServer.swift in Sources */,
 				09F6A6AA215ED9D6005AABCC /* VVIPCTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -517,6 +541,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -574,6 +599,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 3.0;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
