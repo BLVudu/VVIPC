@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0979EA732161C417006116D4 /* VVSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0979EA722161C417006116D4 /* VVSocket.swift */; };
+		0979EA742161C417006116D4 /* VVSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0979EA722161C417006116D4 /* VVSocket.swift */; };
+		0979EA752161C417006116D4 /* VVSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0979EA722161C417006116D4 /* VVSocket.swift */; };
+		0979EA762161C417006116D4 /* VVSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0979EA722161C417006116D4 /* VVSocket.swift */; };
 		098539B4215EE13E00B96FB7 /* VVIPC_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098539AB215EE13E00B96FB7 /* VVIPC_tvOS.framework */; };
 		098539B9215EE13E00B96FB7 /* VVIPC_tvOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098539B8215EE13E00B96FB7 /* VVIPC_tvOSTests.swift */; };
 		098539BB215EE13E00B96FB7 /* VVIPC_tvOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 098539AD215EE13E00B96FB7 /* VVIPC_tvOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -45,6 +49,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0979EA722161C417006116D4 /* VVSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VVSocket.swift; sourceTree = "<group>"; };
 		098539AB215EE13E00B96FB7 /* VVIPC_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVIPC_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		098539AD215EE13E00B96FB7 /* VVIPC_tvOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VVIPC_tvOS.h; sourceTree = "<group>"; };
 		098539AE215EE13E00B96FB7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -143,6 +148,7 @@
 				09F6A6B5215EDA22005AABCC /* VVIPC.swift */,
 				098539C82160AC1600B96FB7 /* VVServer.swift */,
 				098539CF2160AC3C00B96FB7 /* VVClient.swift */,
+				0979EA722161C417006116D4 /* VVSocket.swift */,
 				09F6A69F215ED9D6005AABCC /* Info.plist */,
 			);
 			path = VVIPC;
@@ -334,6 +340,7 @@
 			files = (
 				098539CB2160AC1600B96FB7 /* VVServer.swift in Sources */,
 				098539D22160AC3C00B96FB7 /* VVClient.swift in Sources */,
+				0979EA752161C417006116D4 /* VVSocket.swift in Sources */,
 				098539C5215EE43100B96FB7 /* VVIPC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -345,6 +352,7 @@
 				098539D32160AC3C00B96FB7 /* VVClient.swift in Sources */,
 				098539CE2160AC2500B96FB7 /* VVIPC.swift in Sources */,
 				098539CC2160AC1600B96FB7 /* VVServer.swift in Sources */,
+				0979EA762161C417006116D4 /* VVSocket.swift in Sources */,
 				098539B9215EE13E00B96FB7 /* VVIPC_tvOSTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -355,6 +363,7 @@
 			files = (
 				098539C92160AC1600B96FB7 /* VVServer.swift in Sources */,
 				098539D02160AC3C00B96FB7 /* VVClient.swift in Sources */,
+				0979EA732161C417006116D4 /* VVSocket.swift in Sources */,
 				09F6A6B6215EDA22005AABCC /* VVIPC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,6 +375,7 @@
 				098539D12160AC3C00B96FB7 /* VVClient.swift in Sources */,
 				098539CD2160AC2400B96FB7 /* VVIPC.swift in Sources */,
 				098539CA2160AC1600B96FB7 /* VVServer.swift in Sources */,
+				0979EA742161C417006116D4 /* VVSocket.swift in Sources */,
 				09F6A6AA215ED9D6005AABCC /* VVIPCTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

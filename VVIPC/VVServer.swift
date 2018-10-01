@@ -1,20 +1,25 @@
-//
-//  VVServer.swift
-//  VVIPC
-//
-//  Created by Pinghsien Lin on 9/30/18.
-//  Copyright © 2018 Pinghsien Lin. All rights reserved.
-//
+/*
+ * Copyright (C) 2018 VUDU inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 
 import Foundation
-open class VVServer {
+open class VVServer: VVSocket {
     var serverSocketFd: Int32 = -1
     
     var clientSocketFd: Int32 = -1
-    
-    public init() {
-        
-    }
     
     open func start() {
         
@@ -66,13 +71,18 @@ open class VVServer {
         
         print("status \(status)")
         
-        let info = targetInfo
+        var info = targetInfo
         
         // TODO: this should be in background queue
-        
-        let bound = Darwin.bind(self.serverSocketFd, info!.pointee.ai_addr, info!.pointee.ai_addrlen)
-        if bound != 0 {
-            throw Error("server socket bind error")
+        while info != nil {
+            let bound = Darwin.bind(self.serverSocketFd, info!.pointee.ai_addr, info!.pointee.ai_addrlen)
+            if bound == 0 {
+                break
+                
+            }
+            fatalError("next bind!!!!!!")
+            
+            info = info?.pointee.ai_next
         }
         
         let lis = Darwin.listen(self.serverSocketFd, Int32(10))
@@ -99,6 +109,8 @@ open class VVServer {
                     do {
                         self.clientSocketFd = fd
                         try self.ignoreSIGPIPE(self.clientSocketFd)
+                        
+                        self.checkClientReceive(socket: self.clientSocketFd)
                     } catch let err {
                         print(err)
                         return
@@ -108,17 +120,21 @@ open class VVServer {
         }
     }
     
+    override func dataReceived(socket: Int32, data: NSData) {
+        if let str = NSString(bytes: data.bytes, length: data.length, encoding: String.Encoding.utf8.rawValue) {
+            print("on server \(socket) loadRecved: \(str)")
+        }
+    }
+    
     open func serverSend(_ str: String) {
         if self.clientSocketFd == -1 {
-            print("fatal error!")
+            print("fatal error! client socket: \(self.clientSocketFd)")
             return
         }
-        
-        
-        
+
         str.utf8CString.withUnsafeBufferPointer() {
             let s = Darwin.send(self.clientSocketFd, $0.baseAddress!, $0.count - 1, 0)
-            print("s: \(s) self.clientSocket: \(self.clientSocketFd)")
+            print("s: \(s) count: \($0.count) self.clientSocket: \(self.clientSocketFd)")
         }
     }
     
@@ -127,27 +143,25 @@ open class VVServer {
         self.serverSend("postNoti|-|\(str)|-|\(userInfoData)")
     }
     
-    private func ignoreSIGPIPE(_ fd: Int32) throws {
-        
-        var on: Int32 = 1
-        if setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &on, socklen_t(MemoryLayout<Int32>.size)) < 0 {
-            throw Error("setsockopt SO_NOSIGPIPE error")
-        }
-        
-    }
-
-    deinit {
-        print("deinit server socket")
+    open func shutdown() {
+        print("shutdown")
         if self.serverSocketFd > 0 {
             _ = Darwin.shutdown(self.serverSocketFd, Int32(SHUT_RDWR))
         }
         // VVClient also needs to be closed?
         if self.clientSocketFd > 0 {
+            // will trigger recv count = 0
             _ = Darwin.close(self.clientSocketFd)
         }
         
         self.serverSocketFd = -1
         self.clientSocketFd = -1
+    }
+    
+
+    deinit {
+        print("deinit server socket")
+        self.shutdown()
         
     }
 }

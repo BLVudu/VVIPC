@@ -1,10 +1,19 @@
-//
-//  VVIPCTests.swift
-//  VVIPCTests
-//
-//  Created by Pinghsien Lin on 9/28/18.
-//  Copyright © 2018 Pinghsien Lin. All rights reserved.
-//
+/*
+ * Copyright (C) 2018 VUDU inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 
 import XCTest
 @testable import VVIPC
@@ -14,7 +23,7 @@ import XCTest
 class VVIPCTests: XCTestCase, VVIPCDelegate {
     
     func vvIPCDataRecieve(_ str: String) {
-        print("vvIPCDataRecieve: \(str)")
+        print("vvIPCDataRecieve: \(str.count)")
     }
     func vvIPCDataRecieveError(_ error: Error) {
         
@@ -34,14 +43,16 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
         sleep(1)
         let client = VVClient()
         client.connect(delegate: self)
-        client.checkClientReceive()
-        server.serverSend("asdf")
-//        let vvipc = VVIPC()
-//        vvipc.serverStart()
-//        sleep(2)
-//        print(123)
-//        print(123)
-//        print(123)
+//        client.checkClientReceive()
+        sleep(1)
+        var str = ""
+        for _ in 0..<1000000 {
+            str += "abcdefghij"
+        }
+        print("strcount: \(str.count)")
+        server.serverSend("123456781234567812345678123456781234567812345678aa")
+        server.serverSend(str)
+        
     }
 
     func testPerformanceExample() {

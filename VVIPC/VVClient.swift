@@ -1,21 +1,26 @@
-//
-//  VVClient.swift
-//  VVIPC
-//
-//  Created by Pinghsien Lin on 9/30/18.
-//  Copyright © 2018 Pinghsien Lin. All rights reserved.
-//
+/*
+ * Copyright (C) 2018 VUDU inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 import Foundation
-open class VVClient {
+
+let BUFFER_SIZE: Int = 1024 * 64
+
+open class VVClient: VVSocket {
     var _socket: Int32 = -1
     weak var delegate: VVIPCDelegate? = nil
-    
-    var readBuffer: UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>.allocate(capacity: 4096)
-    var readStorage: NSMutableData = NSMutableData(capacity: 4096)!
-    public init() {
-        
-    }
     
     open func connect(delegate: VVIPCDelegate?) {
         self.delegate = delegate
@@ -39,70 +44,54 @@ open class VVClient {
         
         self._socket = Darwin.socket(info!.pointee.ai_family, info!.pointee.ai_socktype, info!.pointee.ai_protocol)
         print("self.clientSocket: \(self._socket)")
-        try? self.ignoreSIGPIPE(on: self._socket)
+        try? self.ignoreSIGPIPE(self._socket)
         status = Darwin.connect(self._socket, info!.pointee.ai_addr, info!.pointee.ai_addrlen)
         print("status: \(status) self.clientSocker: \(self._socket)")
         if targetInfo != nil {
             freeaddrinfo(targetInfo)
         }
         
-        checkClientReceive()
+        checkClientReceive(socket: self._socket)
     }
     
-    open func checkClientReceive() {
-        var recvFlags: Int32 = 0
-        if self.readStorage.length > 0 {
-            recvFlags |= Int32(MSG_DONTWAIT)
+    open func send(_ str: String) {
+        if self._socket == -1 {
+            print("fatal error! _socket: \(self._socket)")
+            return
         }
-        self.readBuffer.initialize(repeating: 0x0, count: 4096)
-        print("recvFlags: \(recvFlags) clientSocket: \(self._socket)")
         
-        DispatchQueue.global(qos: .default).async {
-            var recvCount: Int = 0 // should always return greater then 0
-            repeat {
-                
-                recvCount = Darwin.recv(self._socket, self.readBuffer, 4096, recvFlags)
-                if let data = NSMutableData(capacity: 4096) {
-                    data.append(self.readBuffer, length: recvCount)
-                    data.append(self.readStorage.bytes, length: self.readStorage.length)
-                    
-                    if let str = NSString(bytes: data.bytes, length: data.length, encoding: String.Encoding.utf8.rawValue) {
-                        if str.hasPrefix("postNoti|-|") {
-                            let arr = str.components(separatedBy: "|-|")
-                            // TODO: check array boundary
-                            self.delegate?.vvIPCNotificationReceived(arr[1], userInfoData: arr[2])
-                        } else {
-                            self.delegate?.vvIPCDataRecieve(str as String)
-                        }
-                    }
-                }
-                
-                
-                //                self.delegate?.vvIPCDataRecieve()
-            } while recvCount > 0
+        str.utf8CString.withUnsafeBufferPointer() {
+            let s = Darwin.send(_socket, $0.baseAddress!, $0.count - 1, 0)
+            print("s: \(s) __socket: \(_socket)")
+        }
+    }
+    
+    
+    override func dataReceived(socket: Int32, data: NSData) {
+        if let str = NSString(bytes: data.bytes, length: data.length, encoding: String.Encoding.utf8.rawValue) {
+            print("loadRecved: \(str.length)")
             
+            if str.hasPrefix("postNoti|-|") {
+                let arr = str.components(separatedBy: "|-|")
+                // TODO: check array boundary
+                self.delegate?.vvIPCNotificationReceived(arr[1], userInfoData: arr[2])
+            } else {
+                self.delegate?.vvIPCDataRecieve(str as String)
+            }
+ 
         }
     }
     
-    private func ignoreSIGPIPE(on fd: Int32) throws {
-        
-        var on: Int32 = 1
-        if setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &on, socklen_t(MemoryLayout<Int32>.size)) < 0 {
-            //throw Error(code: Socket.SOCKET_ERR_SETSOCKOPT_FAILED, reason: self.lastError())
-            fatalError()
+    func closeSocket() {
+        if self._socket > 0 {
+            // will trigger recv count = 0
+            _ = Darwin.close(self._socket)
         }
-        
+        self._socket = -1
     }
     
     deinit {
-
-        if self._socket > 0 {
-            _ = Darwin.close(self._socket)
-        }
-        
-        self._socket = -1
-        
-        self.readBuffer.deallocate()
+        self.closeSocket()
         print("vvclient deinit!!")
     }
 }
