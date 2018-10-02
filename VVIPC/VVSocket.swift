@@ -64,21 +64,6 @@ open class VVSocket {
         }
     }
     
-    
-    open func checkClientReceive(socket: Int32) {
-        
-        DispatchQueue.global(qos: .default).async { [weak self] in
-            repeat {
-                print("loadRecv.....")
-                if let data = self?.loadRecv(socket: socket) {
-                    self?.dataReceived(socket: socket, data: data)
-                    
-                }
-            } while socket > 1
-        }
-    }
-    
-    
     func dataReceived(socket: Int32, data: NSData) {
         
     }

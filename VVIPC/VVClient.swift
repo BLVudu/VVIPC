@@ -51,7 +51,27 @@ open class VVClient: VVSocket {
             freeaddrinfo(targetInfo)
         }
         
-        checkClientReceive(socket: self._socket)
+        checkClientReceive()
+    }
+    
+    open func checkClientReceive() {
+        
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            repeat {
+                guard let socket = self?._socket, socket > 0 else {
+                    break;
+                }
+                print(socket)
+                print("loadRecv.....")
+                if let data = self?.loadRecv(socket: socket) {
+                    //                    print("checkClientReceive got")
+                    self?.dataReceived(socket: socket, data: data)
+                    
+                } else {
+                    //                    print("checkClientReceive no data")
+                }
+            } while true
+        }
     }
     
     open func send(_ str: String) {
@@ -66,8 +86,29 @@ open class VVClient: VVSocket {
         }
     }
     
+    var callback: ((String) -> Void)? = nil
+    
+    open func getFile(_ fileName: String) {
+        if self._socket == -1 {
+            print("fatal error! get file _socket: \(self._socket)")
+            return
+        }
+        
+        let str = "getFile|-|" + fileName
+        
+        self.callback = { str in
+            print("call back string")
+        }
+        
+        str.utf8CString.withUnsafeBufferPointer() {
+            let s = Darwin.send(_socket, $0.baseAddress!, $0.count - 1, 0)
+            print("s: \(s) __socket: \(_socket)")
+        }
+    }
+    
     
     override func dataReceived(socket: Int32, data: NSData) {
+        print(self)
         if let str = NSString(bytes: data.bytes, length: data.length, encoding: String.Encoding.utf8.rawValue) {
             print("loadRecved: \(str.length)")
             
@@ -75,6 +116,11 @@ open class VVClient: VVSocket {
                 let arr = str.components(separatedBy: "|-|")
                 // TODO: check array boundary
                 self.delegate?.vvIPCNotificationReceived(arr[1], userInfoData: arr[2])
+            } else if str.hasPrefix("gotFile|-|") {
+                let arr = str.components(separatedBy: "|-|")
+                print("got file content: \(arr[1])")
+                // TODO: check array boundary
+//                self.delegate?.vvIPCNotificationReceived(arr[1], userInfoData: arr[2])
             } else {
                 self.delegate?.vvIPCDataRecieve(str as String)
             }

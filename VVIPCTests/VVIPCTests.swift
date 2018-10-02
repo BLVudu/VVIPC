@@ -50,8 +50,10 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
             str += "abcdefghij"
         }
         print("strcount: \(str.count)")
-        server.serverSend("123456781234567812345678123456781234567812345678aa")
-        server.serverSend(str)
+//        server.send("a")
+//        server.send(str)
+        client.getFile("filHi")
+//        sleep(1)
         
     }
 

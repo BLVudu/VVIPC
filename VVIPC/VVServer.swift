@@ -38,6 +38,8 @@ open class VVServer: VVSocket {
     }
     
     private func createServerSocketAndListen() throws {
+        
+        
         // Int32(AF_INET) = 2
         // SOCK_STREAM = 1
         // Int32(IPPROTO_TCP) = 6
@@ -50,6 +52,11 @@ open class VVServer: VVSocket {
         
         try self.ignoreSIGPIPE(self.serverSocketFd)
         
+        // reuse port:
+        var on: Int32 = 1
+        if setsockopt(self.serverSocketFd, SOL_SOCKET, SO_REUSEADDR, &on, socklen_t(MemoryLayout<Int32>.size)) < 0 {
+            fatalError("reuse port error!!")
+        }
         
         
         var hints = addrinfo(
@@ -80,6 +87,7 @@ open class VVServer: VVSocket {
                 break
                 
             }
+            print("bind error! errno: \(errno)")
             fatalError("next bind!!!!!!")
             
             info = info?.pointee.ai_next
@@ -88,6 +96,25 @@ open class VVServer: VVSocket {
         let lis = Darwin.listen(self.serverSocketFd, Int32(10))
         if lis < 0 {
             throw Error("server listen error")
+        }
+    }
+    
+    open func checkClientReceive() {
+        
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            repeat {
+                guard let clientSocketFd = self?.clientSocketFd, let s = self?.serverSocketFd, clientSocketFd > 0, s > 0 else {
+                    break;
+                }
+                print("loadRecv.....\(clientSocketFd) \(s)")
+                if let data = self?.loadRecv(socket: clientSocketFd) {
+                    print("checkClientReceive got")
+                    self?.dataReceived(socket: clientSocketFd, data: data)
+                    
+                } else {
+                    print("checkClientReceive no data")
+                }
+            } while true
         }
     }
     
@@ -110,7 +137,7 @@ open class VVServer: VVSocket {
                         self.clientSocketFd = fd
                         try self.ignoreSIGPIPE(self.clientSocketFd)
                         
-                        self.checkClientReceive(socket: self.clientSocketFd)
+                        self.checkClientReceive()
                     } catch let err {
                         print(err)
                         return
@@ -121,12 +148,27 @@ open class VVServer: VVSocket {
     }
     
     override func dataReceived(socket: Int32, data: NSData) {
-        if let str = NSString(bytes: data.bytes, length: data.length, encoding: String.Encoding.utf8.rawValue) {
-            print("on server \(socket) loadRecved: \(str)")
+        guard let str = NSString(bytes: data.bytes, length: data.length, encoding: String.Encoding.utf8.rawValue) else {
+            print("server dataReceived error;")
+            return
+        }
+        
+        print("on server \(socket) loadRecved: \(str)")
+        
+        if str.hasPrefix("getFile|-|") {
+            let arr = str.components(separatedBy: "|-|")
+            
+            let fileName = arr[1]
+            print("getfile: \(fileName)")
+            self.send("gotFile|-|this is a file!!")
+            // TODO: check array boundary
+//            self.delegate?.vvIPCNotificationReceived(arr[1], userInfoData: arr[2])
+        } else {
+//            self.delegate?.vvIPCDataRecieve(str as String)
         }
     }
     
-    open func serverSend(_ str: String) {
+    open func send(_ str: String) {
         if self.clientSocketFd == -1 {
             print("fatal error! client socket: \(self.clientSocketFd)")
             return
@@ -140,7 +182,7 @@ open class VVServer: VVSocket {
     
     open func postNotification(_ str: String, userInfoData: String = "") {
         // I know... it should be a better way of doing this.
-        self.serverSend("postNoti|-|\(str)|-|\(userInfoData)")
+        self.send("postNoti|-|\(str)|-|\(userInfoData)")
     }
     
     open func shutdown() {
