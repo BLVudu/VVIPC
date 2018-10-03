@@ -51,10 +51,12 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
 //        }
 //        print("strcount: \(str.count)")
 //        server.send("\u{01}abbbb\u{02}\u{01}ccccc\u{02}")
-        server.send("abbbccbcbcbsdf asdff ssssss  sdfsdfdsfdfasdfsabccccc")
+//        server.send("abbbccbcbcbsdf asdff ssssss  sdfsdfdsfdfasdfsabccccc")
 //        server.send(str)
-        client.send("asdfasdkflahfl kasjhdfl sdfasdf")
-        client.getFile("filHi")
+//        client.send("asdfasdkflahfl kasjhdfl sdfasdf")
+        client.getFile("filHi") { str in
+            print("aa \(str)")
+        }
         sleep(1)
         
     }

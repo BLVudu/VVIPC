@@ -21,6 +21,9 @@ open class VVSocket {
     var socketId: Int32 = -1
     var buf: Data = Data(capacity: BUFFER_SIZE)
     
+    var commands: [String: Callback] = [:]
+    var commandId: Int = 0
+    
     init () {
         
     }
@@ -93,13 +96,15 @@ open class VVSocket {
         
     }
     
-    open func send(_ str: String) {
+    open func send(_ str: String, commandType: CommandType = .message, commandId: String = "") {
         if self.socketId == -1 {
             print("fatal error! _socket: \(self.socketId)")
             return
         }
         
-        let wrap = DELIMITER_START + str + DELIMITER_END
+        
+        let json = "{\"commandType\": \"\(commandType.rawValue)\", \"commandId\": \"\(commandId)\", \"body\": \"\(str)\"}"
+        let wrap = DELIMITER_START + json + DELIMITER_END
         wrap.utf8CString.withUnsafeBufferPointer() {
             let s = Darwin.send(socketId, $0.baseAddress!, $0.count - 1, 0)
             print("s: \(s) __socket: \(socketId)")

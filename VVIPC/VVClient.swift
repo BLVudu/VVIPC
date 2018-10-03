@@ -16,8 +16,6 @@
 
 import Foundation
 
-
-
 open class VVClient: VVSocket {
 
     weak var delegate: VVIPCDelegate? = nil
@@ -37,7 +35,7 @@ open class VVClient: VVSocket {
         var targetInfo: UnsafeMutablePointer<addrinfo>?
         
         // Retrieve the info on our target...
-        var status: Int32 = getaddrinfo("127.0.0.1", "14112", &hints, &targetInfo)
+        var status: Int32 = getaddrinfo("127.0.0.1", SOCKET_PORT, &hints, &targetInfo)
         
         
         let info = targetInfo
@@ -54,30 +52,47 @@ open class VVClient: VVSocket {
         checkClientReceive()
     }
 
-    var callback: ((String) -> Void)? = nil
-    
-    open func getFile(_ fileName: String) {
+    open func getFile(_ fileName: String, callback: Callback? = nil) {
         if self.socketId == -1 {
             print("fatal error! get file _socket: \(self.socketId)")
             return
         }
         
-        let str = "getFile|-|" + fileName
-        
-        self.callback = { str in
-            print("call back string")
+        var cmdId: String = ""
+        if let cb = callback {
+            self.commandId += 1
+            cmdId = "\(self.commandId)"
+            self.commands[cmdId] = cb
         }
         
-        self.send(str)
+        self.send(fileName, commandType: .getFile, commandId: cmdId)
     }
     
     
     override func dataReceived(_ data: Data) {
+        guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String] else {
+            print("convert to json error")
+            return
+        }
+        
+        if let commandType = json?["commandType"].flatMap(CommandType.init), let body = json?["body"] {
+            if commandType == .gotFile, let commandId = json?["commandId"] {
+                if let cb = self.commands[commandId] {
+                    cb(body)
+                    return
+                }
+            }
+            
+        }
+        
+        
         
         guard let str = String(data: data, encoding: .utf8) else {
             print("client dataReceived error;")
             return
         }
+        
+       
         
         print("dataReceived: \(str)")
         

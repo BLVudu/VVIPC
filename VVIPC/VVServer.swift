@@ -68,7 +68,7 @@ open class VVServer: VVSocket {
         var targetInfo: UnsafeMutablePointer<addrinfo>?
         
         
-        let status: Int32 = getaddrinfo(nil, "14112", &hints, &targetInfo)
+        let status: Int32 = getaddrinfo(nil, SOCKET_PORT, &hints, &targetInfo)
         if status != 0 {
             throw Error("server socket getting address error")
         }
@@ -95,20 +95,6 @@ open class VVServer: VVSocket {
             throw Error("server listen error")
         }
     }
-    
-//    open func checkClientReceive() {
-//        
-//        DispatchQueue.global(qos: .default).async { [weak self] in
-//            repeat {
-//                guard let clientSocketFd = self?.socketId, let s = self?.serverSocketFd, clientSocketFd > 0, s > 0 else {
-//                    break;
-//                }
-//                print("loadRecv.....\(clientSocketFd) \(s)")
-//                self?.loadRecv(socket: clientSocketFd)
-//                
-//            } while true
-//        }
-//    }
     
     private func acceptingClientSocket() {
         
@@ -140,6 +126,21 @@ open class VVServer: VVSocket {
     }
     
     override func dataReceived(_ data: Data) {
+        guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String] else {
+            print("convert to json error")
+            return
+        }
+        
+        if let commandType = json?["commandType"].flatMap(CommandType.init), let body = json?["body"] {
+            if commandType == .getFile, let commandId = json?["commandId"] {
+                // TODO: get body's file name
+                print("filename: \(body)")
+                self.send("thisis a file!!", commandType: .gotFile, commandId: commandId)
+                return
+            }
+        }
+        
+        
         guard let str = String(data: data, encoding: .utf8) else {
             print("server dataReceived error;")
             return

@@ -43,6 +43,26 @@ public struct Error: Swift.Error, CustomStringConvertible {
     }
 }
 
-let BUFFER_SIZE: Int = 8//1024 * 64
+public typealias Callback = ((String) -> Void)
+
+let BUFFER_SIZE: Int = 1024 * 64
 let DELIMITER_START: String = "\u{01}"
 let DELIMITER_END: String = "\u{02}"
+let SOCKET_PORT: String = "14112"
+
+public enum CommandType: String {
+    case message, getFile, gotFile
+    init?(_ str: String?) {
+        guard let s = str else { return nil }
+        
+        if s == "message" {
+            self = .message
+        } else if s == "getFile" {
+            self = .getFile
+        } else if s == "gotFile" {
+            self = .gotFile
+        } else {
+            return nil
+        }
+    }
+}
