@@ -24,7 +24,7 @@ open class VVSocket {
     var commands: [String: Callback] = [:]
     var commandId: Int = 0
     
-    init () {
+    public init () {
         
     }
     
