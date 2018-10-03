@@ -42,3 +42,7 @@ public struct Error: Swift.Error, CustomStringConvertible {
         return "Error: \(self.reason)"
     }
 }
+
+let BUFFER_SIZE: Int = 8//1024 * 64
+let DELIMITER_START: String = "\u{01}"
+let DELIMITER_END: String = "\u{02}"

@@ -16,57 +16,96 @@
 
 import Foundation
 
+
 open class VVSocket {
     var socketId: Int32 = -1
+    var buf: Data = Data(capacity: BUFFER_SIZE)
     
     init () {
         
     }
     
-    func loadRecv(socket: Int32) -> NSMutableData? {
+    
+    open func checkClientReceive() {
         
-        let totalBuffer: NSMutableData = NSMutableData(capacity: BUFFER_SIZE)!
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            repeat {
+                guard let socket = self?.socketId, socket > 0 else {
+                    break;
+                }
+                self?.loadRecv(socket: socket)
+            } while true
+        }
+    }
+    
+    
+    
+    func loadRecv(socket: Int32) {
+        let start: UInt8 = UInt8(DELIMITER_START.data(using: .utf8)![0])
+        let end: UInt8 = UInt8(DELIMITER_END.data(using: .utf8)![0])
+        
         let currentBuffer: UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>.allocate(capacity: BUFFER_SIZE)
         print("clientSocket: \(socket)")
         
         repeat {
             let recvCount = Darwin.recv(socket, currentBuffer, BUFFER_SIZE, 0)
-            print("recvCount: \(recvCount)")
+            print("recvCount: \(recvCount) \(currentBuffer)")
             if recvCount < 0 {
                 print("Darwin.recv error errno\(Darwin.errno)")
-                return nil
+                return
             }
             
             if recvCount == 0 {
                 print("Darwin.recv 0 self._socket: \(socket)")
                 // close?
 //                self.closeSocket(socket: socket)
-                return nil
+                return
             }
             
-            totalBuffer.append(currentBuffer, length: recvCount)
+            let receivedData: NSMutableData = NSMutableData(capacity: BUFFER_SIZE)!
+            receivedData.append(currentBuffer, length: recvCount)
             
-            if recvCount < BUFFER_SIZE {
-                print("break loop: \(recvCount) BUFFER_SIZE: \(BUFFER_SIZE)")
-                break
-            } else {
-//                print("continue to loop recvCount: \(recvCount) BUFFER_SIZE: \(BUFFER_SIZE)")
+            guard let data =  NSMutableData(capacity: receivedData.length) else {
+                print("fatal error: creating NSMutableData error!")
+                return
             }
+            
+            data.append(receivedData.bytes, length: receivedData.length)
+            
+            
+            (data as Data).forEach { byte in
+                if byte == start {
+                    self.buf.removeAll(keepingCapacity: true)
+                } else if byte == end {
+                    self.dataReceived(self.buf)
+                    self.buf.removeAll(keepingCapacity: true)
+                } else {
+                    self.buf.append(byte)
+                }
+            }
+            
+            print("totalBu ffer: \(self.buf)")
             
         } while true
-        print("totalBuffer: \(totalBuffer.length)")
-        if let data =  NSMutableData(capacity: totalBuffer.length) {
-            data.append(totalBuffer.bytes, length: totalBuffer.length)
-            return data
-            
-        } else {
-            return nil
+    }
+    
+    func dataReceived(_ data: Data) {
+        
+    }
+    
+    open func send(_ str: String) {
+        if self.socketId == -1 {
+            print("fatal error! _socket: \(self.socketId)")
+            return
+        }
+        
+        let wrap = DELIMITER_START + str + DELIMITER_END
+        wrap.utf8CString.withUnsafeBufferPointer() {
+            let s = Darwin.send(socketId, $0.baseAddress!, $0.count - 1, 0)
+            print("s: \(s) __socket: \(socketId)")
         }
     }
     
-    func dataReceived(socket: Int32, data: NSData) {
-        
-    }
     
     func ignoreSIGPIPE(_ fd: Int32) throws {
         

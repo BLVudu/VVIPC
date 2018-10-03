@@ -19,8 +19,6 @@ import Foundation
 open class VVServer: VVSocket {
     var serverSocketFd: Int32 = -1
     
-    var clientSocketFd: Int32 = -1
-    
     open func start() {
         
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
@@ -30,7 +28,7 @@ open class VVServer: VVSocket {
                 print("server listening...")
                 
                 strongSelf.acceptingClientSocket()
-                print("accepted clientSocketFd: \(strongSelf.clientSocketFd), serverSocketFd: \(strongSelf.serverSocketFd)")
+                print("accepted clientSocketFd: \(strongSelf.socketId), serverSocketFd: \(strongSelf.serverSocketFd)")
             } catch let err {
                 print(err)
             }
@@ -38,7 +36,6 @@ open class VVServer: VVSocket {
     }
     
     private func createServerSocketAndListen() throws {
-        
         
         // Int32(AF_INET) = 2
         // SOCK_STREAM = 1
@@ -99,24 +96,19 @@ open class VVServer: VVSocket {
         }
     }
     
-    open func checkClientReceive() {
-        
-        DispatchQueue.global(qos: .default).async { [weak self] in
-            repeat {
-                guard let clientSocketFd = self?.clientSocketFd, let s = self?.serverSocketFd, clientSocketFd > 0, s > 0 else {
-                    break;
-                }
-                print("loadRecv.....\(clientSocketFd) \(s)")
-                if let data = self?.loadRecv(socket: clientSocketFd) {
-                    print("checkClientReceive got")
-                    self?.dataReceived(socket: clientSocketFd, data: data)
-                    
-                } else {
-                    print("checkClientReceive no data")
-                }
-            } while true
-        }
-    }
+//    open func checkClientReceive() {
+//        
+//        DispatchQueue.global(qos: .default).async { [weak self] in
+//            repeat {
+//                guard let clientSocketFd = self?.socketId, let s = self?.serverSocketFd, clientSocketFd > 0, s > 0 else {
+//                    break;
+//                }
+//                print("loadRecv.....\(clientSocketFd) \(s)")
+//                self?.loadRecv(socket: clientSocketFd)
+//                
+//            } while true
+//        }
+//    }
     
     private func acceptingClientSocket() {
         
@@ -134,8 +126,8 @@ open class VVServer: VVSocket {
                     }
                     
                     do {
-                        self.clientSocketFd = fd
-                        try self.ignoreSIGPIPE(self.clientSocketFd)
+                        self.socketId = fd
+                        try self.ignoreSIGPIPE(self.socketId)
                         
                         self.checkClientReceive()
                     } catch let err {
@@ -147,13 +139,13 @@ open class VVServer: VVSocket {
         }
     }
     
-    override func dataReceived(socket: Int32, data: NSData) {
-        guard let str = NSString(bytes: data.bytes, length: data.length, encoding: String.Encoding.utf8.rawValue) else {
+    override func dataReceived(_ data: Data) {
+        guard let str = String(data: data, encoding: .utf8) else {
             print("server dataReceived error;")
             return
         }
         
-        print("on server \(socket) loadRecved: \(str)")
+        print("on server \(socket) dataReceived: \(str)")
         
         if str.hasPrefix("getFile|-|") {
             let arr = str.components(separatedBy: "|-|")
@@ -167,19 +159,7 @@ open class VVServer: VVSocket {
 //            self.delegate?.vvIPCDataRecieve(str as String)
         }
     }
-    
-    open func send(_ str: String) {
-        if self.clientSocketFd == -1 {
-            print("fatal error! client socket: \(self.clientSocketFd)")
-            return
-        }
 
-        str.utf8CString.withUnsafeBufferPointer() {
-            let s = Darwin.send(self.clientSocketFd, $0.baseAddress!, $0.count - 1, 0)
-            print("s: \(s) count: \($0.count) self.clientSocket: \(self.clientSocketFd)")
-        }
-    }
-    
     open func postNotification(_ str: String, userInfoData: String = "") {
         // I know... it should be a better way of doing this.
         self.send("postNoti|-|\(str)|-|\(userInfoData)")
@@ -191,13 +171,13 @@ open class VVServer: VVSocket {
             _ = Darwin.shutdown(self.serverSocketFd, Int32(SHUT_RDWR))
         }
         // VVClient also needs to be closed?
-        if self.clientSocketFd > 0 {
+        if self.socketId > 0 {
             // will trigger recv count = 0
-            _ = Darwin.close(self.clientSocketFd)
+            _ = Darwin.close(self.socketId)
         }
         
         self.serverSocketFd = -1
-        self.clientSocketFd = -1
+        self.socketId = -1
     }
     
 

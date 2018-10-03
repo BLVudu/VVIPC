@@ -45,15 +45,17 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
         client.connect(delegate: self)
 //        client.checkClientReceive()
         sleep(1)
-        var str = ""
-        for _ in 0..<1000000 {
-            str += "abcdefghij"
-        }
-        print("strcount: \(str.count)")
-//        server.send("a")
+//        var str = ""
+//        for _ in 0..<100000 {
+//            str += "abcdefghij"
+//        }
+//        print("strcount: \(str.count)")
+//        server.send("\u{01}abbbb\u{02}\u{01}ccccc\u{02}")
+        server.send("abbbccbcbcbsdf asdff ssssss  sdfsdfdsfdfasdfsabccccc")
 //        server.send(str)
+        client.send("asdfasdkflahfl kasjhdfl sdfasdf")
         client.getFile("filHi")
-//        sleep(1)
+        sleep(1)
         
     }
 
