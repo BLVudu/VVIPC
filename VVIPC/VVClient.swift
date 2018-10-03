@@ -16,6 +16,16 @@
 
 import Foundation
 
+
+// should be on main target
+extension VVIPCDelegate {
+    public func vvIPCNotificationReceived(_ name: String, userInfo: [String: String]) {
+        print("post name: \(name) userInfoData: \(userInfo)")
+        
+        NotificationCenter.default.post(name: Notification.Name(name), object: self, userInfo: userInfo)
+    }
+}
+
 open class VVClient: VVSocket {
 
     weak var delegate: VVIPCDelegate? = nil
@@ -70,45 +80,35 @@ open class VVClient: VVSocket {
     
     
     override func dataReceived(_ data: Data) {
-        guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String] else {
-            print("convert to json error")
+        guard let cmd = VVCommand(data: data) else {
+            print("convert to vvCommand error")
             return
         }
         
-        if let commandType = json?["commandType"].flatMap(CommandType.init), let body = json?["body"] {
-            if commandType == .gotFile, let commandId = json?["commandId"] {
-                if let cb = self.commands[commandId] {
-                    cb(body)
-                    return
-                }
+        if let cb = self.commands[cmd.id] {
+            cb(cmd.body)
+            self.commands[cmd.id] = nil
+            return
+        }
+        
+        if cmd.type == .postNotification {
+            guard let p = VVPostNotification(cmd.body) else {
+                print("create VVPostNotification error")
+                return
             }
-            
+            print(p.name)
+            print(p.userInfo)
+//            let arr = cmd.body.components(separatedBy: "|-|")
+            // TODO: check array boundary
+//            print(arr)
+            self.delegate?.vvIPCNotificationReceived(p.name, userInfo: p.userInfo)
         }
         
-        
-        
-        guard let str = String(data: data, encoding: .utf8) else {
-            print("client dataReceived error;")
+        if cmd.type == .message {
+            self.delegate?.vvIPCDataRecieve(cmd.body)
             return
         }
         
-       
-        
-        print("dataReceived: \(str)")
-        
-        if str.hasPrefix("postNoti|-|") {
-            let arr = str.components(separatedBy: "|-|")
-            // TODO: check array boundary
-            self.delegate?.vvIPCNotificationReceived(arr[1], userInfoData: arr[2])
-        } else if str.hasPrefix("gotFile|-|") {
-            let arr = str.components(separatedBy: "|-|")
-            print("got file content: \(arr[1])")
-            // TODO: check array boundary
-//                self.delegate?.vvIPCNotificationReceived(arr[1], userInfoData: arr[2])
-        } else {
-            self.delegate?.vvIPCDataRecieve(str as String)
-        }
- 
         
     }
     

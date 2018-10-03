@@ -19,19 +19,11 @@ import Foundation
 public protocol VVIPCDelegate: class {
     func vvIPCDataRecieve(_ str: String)
     func vvIPCDataRecieveError(_ error: Error) // TODO: some errors
-    func vvIPCNotificationReceived(_ str: String, userInfoData: String)
+    func vvIPCNotificationReceived(_ str: String, userInfo: [String: String])
     
     // receiveDataCompelte
 }
 
-// should be on main target
-extension VVIPCDelegate {
-    public func vvIPCNotificationReceived(_ name: String, userInfoData: String) {
-        print("post name: \(name) userInfoData: \(userInfoData)")
-        let userInfo = ["data": userInfoData]
-        NotificationCenter.default.post(name: Notification.Name(name), object: self, userInfo: userInfo)
-    }
-}
 
 public struct Error: Swift.Error, CustomStringConvertible {
     let reason: String
@@ -50,19 +42,101 @@ let DELIMITER_START: String = "\u{01}"
 let DELIMITER_END: String = "\u{02}"
 let SOCKET_PORT: String = "14112"
 
+public struct VVPostNotification {
+    let name: String
+    let userInfo: [String: String]
+    init(name: String, userInfo: [String: String]) {
+        self.name = name
+        self.userInfo = userInfo
+    }
+    init?(_ str: String) {
+
+        guard let data = str.data(using: .utf8) else { return nil }
+        guard let jsonData = try? JSONSerialization.jsonObject(with: data, options: [])
+        , let json = jsonData as? [String: Any] else {
+            print("jsonData error")
+            return nil
+        }
+        
+        guard let name = json["name"] as? String else { return nil }
+        guard let userInfo = json["userInfo"] as? [String: String] else { return nil }
+        
+        self.name = name
+        self.userInfo = userInfo
+    }
+    
+    public var postBody: String {
+        var dic: [String: Any] = [:]
+        dic["name"] = self.name
+        dic["userInfo"] = self.userInfo
+        let jsonData = try! JSONSerialization.data(withJSONObject: dic, options: [])
+        return String(data: jsonData, encoding: .utf8)!
+    }
+}
+
 public enum CommandType: String {
-    case message, getFile, gotFile
+    case message, getFile, gotFile, postNotification, pushNotification, userDefault
     init?(_ str: String?) {
         guard let s = str else { return nil }
         
-        if s == "message" {
-            self = .message
-        } else if s == "getFile" {
-            self = .getFile
-        } else if s == "gotFile" {
-            self = .gotFile
-        } else {
+        switch s {
+        case "message":          self = .message
+        case "getFile":          self = .getFile
+        case "gotFile":          self = .gotFile
+        case "postNotification": self = .postNotification
+        case "pushNotification": self = .pushNotification
+        case "userDefault":      self = .userDefault
+        default:                 return nil
+        }
+    }
+}
+
+public struct VVCommand {
+    let id: String
+    let type: CommandType
+    let body: String
+    
+    init(id: String, type: CommandType, body: String) {
+        self.id = id
+        self.type = type
+        self.body = body
+    }
+    
+    init?(data: Data) {
+        guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String] else {
+            print("convert to json error")
             return nil
         }
+        
+        guard let commandType = json?["commandType"].flatMap(CommandType.init) else {
+            print("convert commandType error")
+            return nil
+        }
+        
+        guard let commandId = json?["commandId"] else {
+            print("convert commandId error")
+            return nil
+        }
+        
+        guard let body = json?["body"] else {
+            print("convert body error")
+            return nil
+        }
+        
+        self.id = commandId
+        self.type = commandType
+        self.body = body
+    }
+    
+    public func toDic() -> [String: String] {
+        return ["commandId": self.id,
+                "commandType": self.type.rawValue,
+                "body": self.body]
+    }
+
+    public func toJsonStr() -> String {
+        let dic = self.toDic()
+        let jsonData = try! JSONSerialization.data(withJSONObject: dic, options: [])
+        return String(data: jsonData, encoding: .utf8)!
     }
 }

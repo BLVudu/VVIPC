@@ -54,9 +54,12 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
 //        server.send("abbbccbcbcbsdf asdff ssssss  sdfsdfdsfdfasdfsabccccc")
 //        server.send(str)
 //        client.send("asdfasdkflahfl kasjhdfl sdfasdf")
-        client.getFile("filHi") { str in
-            print("aa \(str)")
-        }
+//        client.getFile("fil\"Hi") { str in
+//            print("aa \(str)")
+//        }
+        server.postNotification("networkNotification", userInfo: ["userId":"11223"])
+        server.postNotification("networkNotification", userInfo: ["userId":"11223", "uaaa": "bbb"])
+        server.postNotification("networkNotification")
         sleep(1)
         
     }

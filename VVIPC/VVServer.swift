@@ -126,20 +126,26 @@ open class VVServer: VVSocket {
     }
     
     override func dataReceived(_ data: Data) {
-        guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String] else {
-            print("convert to json error")
+        guard let cmd = VVCommand(data: data) else {
+            print("convert to vvCommand error")
             return
         }
         
-        if let commandType = json?["commandType"].flatMap(CommandType.init), let body = json?["body"] {
-            if commandType == .getFile, let commandId = json?["commandId"] {
-                // TODO: get body's file name
-                print("filename: \(body)")
-                self.send("thisis a file!!", commandType: .gotFile, commandId: commandId)
-                return
-            }
+        if cmd.type == .getFile {
+            // TODO: get body's file name
+            print("filename: \(cmd.body)")
+            self.send("thisis a file!!", commandType: .gotFile, commandId: cmd.id)
+            return
         }
         
+        // Note: not use yet
+        if let cb = self.commands[cmd.id] {
+            cb(cmd.body)
+            self.commands[cmd.id] = nil
+            return
+        }
+        
+        // TODO:
         
         guard let str = String(data: data, encoding: .utf8) else {
             print("server dataReceived error;")
@@ -154,16 +160,17 @@ open class VVServer: VVSocket {
             let fileName = arr[1]
             print("getfile: \(fileName)")
             self.send("gotFile|-|this is a file!!")
-            // TODO: check array boundary
-//            self.delegate?.vvIPCNotificationReceived(arr[1], userInfoData: arr[2])
+            
         } else {
 //            self.delegate?.vvIPCDataRecieve(str as String)
         }
     }
 
-    open func postNotification(_ str: String, userInfoData: String = "") {
-        // I know... it should be a better way of doing this.
-        self.send("postNoti|-|\(str)|-|\(userInfoData)")
+    open func postNotification(_ name: String, userInfo: [String: String] = [:]) {
+
+        let p = VVPostNotification(name: name, userInfo: userInfo)
+        
+        self.send(p.postBody, commandType: .postNotification, commandId: "")
     }
     
     open func shutdown() {

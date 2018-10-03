@@ -75,7 +75,7 @@ open class VVSocket {
             
             data.append(receivedData.bytes, length: receivedData.length)
             
-            
+            // TODO: support Unicode
             (data as Data).forEach { byte in
                 if byte == start {
                     self.buf.removeAll(keepingCapacity: true)
@@ -102,8 +102,9 @@ open class VVSocket {
             return
         }
         
+        let vvCommand = VVCommand(id: commandId, type: commandType, body: str)
         
-        let json = "{\"commandType\": \"\(commandType.rawValue)\", \"commandId\": \"\(commandId)\", \"body\": \"\(str)\"}"
+        let json = vvCommand.toJsonStr() 
         let wrap = DELIMITER_START + json + DELIMITER_END
         wrap.utf8CString.withUnsafeBufferPointer() {
             let s = Darwin.send(socketId, $0.baseAddress!, $0.count - 1, 0)
