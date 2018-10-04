@@ -96,11 +96,7 @@ open class VVIPC: VVSocket {
                 print("create VVPostNotification error")
                 return
             }
-            print(p.name)
-            print(p.userInfo)
-//            let arr = cmd.body.components(separatedBy: "|-|")
-            // TODO: check array boundary
-//            print(arr)
+            
             self.delegate?.vvIPCNotificationReceived(p.name, userInfo: p.userInfo)
         }
         

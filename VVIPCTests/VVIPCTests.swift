@@ -20,13 +20,21 @@ import XCTest
 
 
 
-class VVIPCTests: XCTestCase, VVIPCDelegate {
+class VVIPCTests: XCTestCase, VVIPCDelegate, VVIPCUITestDelegate {
     
     func vvIPCDataRecieve(_ str: String) {
         print("vvIPCDataRecieve: \(str.count)")
     }
     func vvIPCDataRecieveError() {
         
+    }
+    func vvIPCGetFile(_ file: String) -> String? {
+        guard let bundlePath = self.getBundlePath(file) else { return nil }
+        if let contents = try? String(contentsOfFile: bundlePath) {
+            return contents
+        } else {
+            return nil
+        }
     }
     
     override func setUp() {
@@ -37,6 +45,10 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
+    private func getBundlePath(_ fileName: String) -> String? {
+        return Bundle(for: type(of: self) as AnyClass).path(forResource: fileName, ofType: "json")
+    }
+//
     func testExample() {
 //        let server = VVIPCUITest()
         VVIPCUITest.shared.start(delegate: self)
@@ -55,9 +67,9 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
 //        server.send("abbbccbcbcbsdf asdff ssssss  sdfsdfdsfdfasdfsabccccc")
 //        server.send(str)
 //        client.send("asdfasdkflahfl kasjhdfl sdfasdf")
-//        client.getFile("fil\"Hi") { str in
-//            print("aa \(str)")
-//        }
+        VVIPC.shared.getFile("file1") { str in
+            print("aa \(str)")
+        }
 //        server.postNotification("networkNotification", userInfo: ["userId":"11223"])
 //        server.postNotification("networkNotification", userInfo: ["userId":"11223", "uaaa": "bbb"])
 //        server.postNotification("networkNotification")

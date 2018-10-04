@@ -16,6 +16,10 @@
 
 import Foundation
 
+public protocol VVIPCUITestDelegate: class {
+    func vvIPCGetFile(_ file: String) -> String?
+}
+
 public protocol VVIPCDelegate: class {
     func vvIPCDataRecieve(_ str: String)
     func vvIPCDataRecieveError() // TODO: some errors

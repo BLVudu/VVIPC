@@ -20,9 +20,10 @@ open class VVIPCUITest: VVSocket {
     
     public static let shared = VVIPCUITest()
     var serverSocketFd: Int32 = -1
+    weak var delegate: VVIPCUITestDelegate? = nil
     
-    open func start() {
-        
+    open func start(delegate: VVIPCUITestDelegate? = nil) {
+        self.delegate = delegate
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             guard let strongSelf = self else { return }
             do {
@@ -128,9 +129,6 @@ open class VVIPCUITest: VVSocket {
         }
     }
     
-    private func getBundlePath(_ fileName: String) -> String? {
-        return Bundle(for: type(of: self) as AnyClass).path(forResource: fileName, ofType: "json")
-    }
    
     override func dataReceived(_ data: Data) {
         guard let cmd = VVCommand(data: data) else {
@@ -142,13 +140,12 @@ open class VVIPCUITest: VVSocket {
             
             print("filename: \(cmd.body)")
             
-            guard let bundlePath = self.getBundlePath(cmd.body) else { return }
-            if let contents = try? String(contentsOfFile: bundlePath) {
+            if let contents = self.delegate?.vvIPCGetFile(cmd.body) {
                 self.send(contents, commandType: .gotFile, commandId: cmd.id)
             } else {
                 self.send("", commandType: .gotFile, commandId: cmd.id)
             }
-
+            
             return
         }
         
