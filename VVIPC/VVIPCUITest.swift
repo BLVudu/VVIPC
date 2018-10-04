@@ -16,7 +16,9 @@
 
 
 import Foundation
-open class VVServer: VVSocket {
+open class VVIPCUITest: VVSocket {
+    
+    static let shared = VVIPCUITest()
     var serverSocketFd: Int32 = -1
     
     open func start() {
@@ -43,7 +45,8 @@ open class VVServer: VVSocket {
         // IPv4 TCP
         self.serverSocketFd = Darwin.socket(Int32(AF_INET), SOCK_STREAM, Int32(IPPROTO_TCP))
         if self.serverSocketFd < 0 {
-            throw Error("serverSocketFd created error")
+            fatalError("serverSocketFd created error")
+            
         }
         print("server socket created: \(serverSocketFd)")
         
@@ -70,7 +73,7 @@ open class VVServer: VVSocket {
         
         let status: Int32 = getaddrinfo(nil, SOCKET_PORT, &hints, &targetInfo)
         if status != 0 {
-            throw Error("server socket getting address error")
+            fatalError("server socket getting address error")
         }
         
         print("status \(status)")
@@ -92,7 +95,7 @@ open class VVServer: VVSocket {
         
         let lis = Darwin.listen(self.serverSocketFd, Int32(10))
         if lis < 0 {
-            throw Error("server listen error")
+            fatalError("server listen error")
         }
     }
     
@@ -125,6 +128,10 @@ open class VVServer: VVSocket {
         }
     }
     
+    private func getBundlePath(_ fileName: String) -> String? {
+        return Bundle(for: type(of: self) as AnyClass).path(forResource: fileName, ofType: "json")
+    }
+    
     override func dataReceived(_ data: Data) {
         guard let cmd = VVCommand(data: data) else {
             print("convert to vvCommand error")
@@ -134,7 +141,19 @@ open class VVServer: VVSocket {
         if cmd.type == .getFile {
             // TODO: get body's file name
             print("filename: \(cmd.body)")
-            self.send("thisis a file!!", commandType: .gotFile, commandId: cmd.id)
+            guard let bundlePath = self.getBundlePath(cmd.body) else {
+                print("file not found eroor")
+                // TODO: send to client
+                return
+            }
+            
+            do {
+                let contents = try String(contentsOfFile: bundlePath)
+                self.send(contents, commandType: .gotFile, commandId: cmd.id)
+            } catch {
+                print("no contents error")
+            }
+            
             return
         }
         

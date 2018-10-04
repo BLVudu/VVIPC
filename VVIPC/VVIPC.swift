@@ -16,127 +16,112 @@
 
 import Foundation
 
-public protocol VVIPCDelegate: class {
-    func vvIPCDataRecieve(_ str: String)
-    func vvIPCDataRecieveError(_ error: Error) // TODO: some errors
-    func vvIPCNotificationReceived(_ str: String, userInfo: [String: String])
-    
-    // receiveDataCompelte
-}
 
-
-public struct Error: Swift.Error, CustomStringConvertible {
-    let reason: String
-    init(_ reason: String) {
-        self.reason = reason
-    }
-    public var description: String {
-        return "Error: \(self.reason)"
+// should be on main target
+extension VVIPCDelegate {
+    public func vvIPCNotificationReceived(_ name: String, userInfo: [String: String]) {
+        print("post name: \(name) userInfoData: \(userInfo)")
+        
+        NotificationCenter.default.post(name: Notification.Name(name), object: self, userInfo: userInfo)
     }
 }
 
-public typealias Callback = ((String) -> Void)
-
-let BUFFER_SIZE: Int = 1024 * 64
-let DELIMITER_START: String = "\u{01}"
-let DELIMITER_END: String = "\u{02}"
-let SOCKET_PORT: String = "14112"
-
-public struct VVPostNotification {
-    let name: String
-    let userInfo: [String: String]
-    init(name: String, userInfo: [String: String]) {
-        self.name = name
-        self.userInfo = userInfo
-    }
-    init?(_ str: String) {
-
-        guard let data = str.data(using: .utf8) else { return nil }
-        guard let jsonData = try? JSONSerialization.jsonObject(with: data, options: [])
-        , let json = jsonData as? [String: Any] else {
-            print("jsonData error")
-            return nil
+open class VVIPC: VVSocket {
+    static let shared = VVIPC()
+    weak var delegate: VVIPCDelegate? = nil
+    
+    open func connect(delegate: VVIPCDelegate?) {
+        self.delegate = delegate
+        
+        var hints = addrinfo(
+            ai_flags: AI_PASSIVE,
+            ai_family: 0,
+            ai_socktype: 1,
+            ai_protocol: 0,
+            ai_addrlen: 0,
+            ai_canonname: nil,
+            ai_addr: nil,
+            ai_next: nil)
+        var targetInfo: UnsafeMutablePointer<addrinfo>?
+        
+        // Retrieve the info on our target...
+        var status: Int32 = getaddrinfo("127.0.0.1", SOCKET_PORT, &hints, &targetInfo)
+        
+        
+        let info = targetInfo
+        
+        self.socketId = Darwin.socket(info!.pointee.ai_family, info!.pointee.ai_socktype, info!.pointee.ai_protocol)
+        print("self.clientSocket: \(self.socketId)")
+        try? self.ignoreSIGPIPE(self.socketId)
+        status = Darwin.connect(self.socketId, info!.pointee.ai_addr, info!.pointee.ai_addrlen)
+        print("status: \(status) self.clientSocker: \(self.socketId)")
+        if targetInfo != nil {
+            freeaddrinfo(targetInfo)
         }
         
-        guard let name = json["name"] as? String else { return nil }
-        guard let userInfo = json["userInfo"] as? [String: String] else { return nil }
+        checkClientReceive()
+    }
+
+    open func getFile(_ fileName: String, callback: Callback? = nil) {
+        if self.socketId == -1 {
+            print("fatal error! get file _socket: \(self.socketId)")
+            return
+        }
         
-        self.name = name
-        self.userInfo = userInfo
+        var cmdId: String = ""
+        if let cb = callback {
+            self.commandId += 1
+            cmdId = "\(self.commandId)"
+            self.commands[cmdId] = cb
+        }
+        
+        self.send(fileName, commandType: .getFile, commandId: cmdId)
     }
     
-    public var postBody: String {
-        var dic: [String: Any] = [:]
-        dic["name"] = self.name
-        dic["userInfo"] = self.userInfo
-        let jsonData = try! JSONSerialization.data(withJSONObject: dic, options: [])
-        return String(data: jsonData, encoding: .utf8)!
-    }
-}
-
-public enum CommandType: String {
-    case message, getFile, gotFile, postNotification, pushNotification, userDefault
-    init?(_ str: String?) {
-        guard let s = str else { return nil }
-        
-        switch s {
-        case "message":          self = .message
-        case "getFile":          self = .getFile
-        case "gotFile":          self = .gotFile
-        case "postNotification": self = .postNotification
-        case "pushNotification": self = .pushNotification
-        case "userDefault":      self = .userDefault
-        default:                 return nil
-        }
-    }
-}
-
-public struct VVCommand {
-    let id: String
-    let type: CommandType
-    let body: String
     
-    init(id: String, type: CommandType, body: String) {
-        self.id = id
-        self.type = type
-        self.body = body
+    override func dataReceived(_ data: Data) {
+        guard let cmd = VVCommand(data: data) else {
+            print("convert to vvCommand error")
+            return
+        }
+        
+        if let cb = self.commands[cmd.id] {
+            cb(cmd.body)
+            self.commands[cmd.id] = nil
+            return
+        }
+        
+        if cmd.type == .postNotification {
+            guard let p = VVPostNotification(cmd.body) else {
+                print("create VVPostNotification error")
+                return
+            }
+            print(p.name)
+            print(p.userInfo)
+//            let arr = cmd.body.components(separatedBy: "|-|")
+            // TODO: check array boundary
+//            print(arr)
+            self.delegate?.vvIPCNotificationReceived(p.name, userInfo: p.userInfo)
+        }
+        
+        if cmd.type == .message {
+            self.delegate?.vvIPCDataRecieve(cmd.body)
+            return
+        }
+        
+        
     }
     
-    init?(data: Data) {
-        guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String] else {
-            print("convert to json error")
-            return nil
+    func closeSocket() {
+        if self.socketId > 0 {
+            // will trigger recv count = 0
+            _ = Darwin.close(self.socketId)
         }
-        
-        guard let commandType = json?["commandType"].flatMap(CommandType.init) else {
-            print("convert commandType error")
-            return nil
-        }
-        
-        guard let commandId = json?["commandId"] else {
-            print("convert commandId error")
-            return nil
-        }
-        
-        guard let body = json?["body"] else {
-            print("convert body error")
-            return nil
-        }
-        
-        self.id = commandId
-        self.type = commandType
-        self.body = body
+        self.socketId = -1
     }
     
-    public func toDic() -> [String: String] {
-        return ["commandId": self.id,
-                "commandType": self.type.rawValue,
-                "body": self.body]
-    }
-
-    public func toJsonStr() -> String {
-        let dic = self.toDic()
-        let jsonData = try! JSONSerialization.data(withJSONObject: dic, options: [])
-        return String(data: jsonData, encoding: .utf8)!
+    deinit {
+        self.closeSocket()
+        print("vvclient deinit!!")
     }
 }

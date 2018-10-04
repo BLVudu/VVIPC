@@ -36,32 +36,32 @@ open class VVSocket {
                 guard let socket = self?.socketId, socket > 0 else {
                     break;
                 }
-                self?.loadRecv(socket: socket)
+                self?.loadRecv()
             } while true
         }
     }
     
     
     
-    func loadRecv(socket: Int32) {
+    private func loadRecv() {
         let start: UInt8 = UInt8(DELIMITER_START.data(using: .utf8)![0])
         let end: UInt8 = UInt8(DELIMITER_END.data(using: .utf8)![0])
         
         let currentBuffer: UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>.allocate(capacity: BUFFER_SIZE)
-        print("clientSocket: \(socket)")
+        print("clientSocket: \(self.socketId)")
         
         repeat {
-            let recvCount = Darwin.recv(socket, currentBuffer, BUFFER_SIZE, 0)
+            let recvCount = Darwin.recv(self.socketId, currentBuffer, BUFFER_SIZE, 0)
             print("recvCount: \(recvCount) \(currentBuffer)")
             if recvCount < 0 {
                 print("Darwin.recv error errno\(Darwin.errno)")
+                self.socketId = -1
                 return
             }
             
             if recvCount == 0 {
-                print("Darwin.recv 0 self._socket: \(socket)")
-                // close?
-//                self.closeSocket(socket: socket)
+                print("Darwin.recv 0 self._socket: \(self.socketId)")
+                self.socketId = -1
                 return
             }
             
@@ -117,7 +117,7 @@ open class VVSocket {
         
         var on: Int32 = 1
         if setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &on, socklen_t(MemoryLayout<Int32>.size)) < 0 {
-            throw Error("setsockopt SO_NOSIGPIPE error")
+            fatalError("setsockopt SO_NOSIGPIPE error")
         }
         
     }

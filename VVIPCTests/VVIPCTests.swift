@@ -25,7 +25,7 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
     func vvIPCDataRecieve(_ str: String) {
         print("vvIPCDataRecieve: \(str.count)")
     }
-    func vvIPCDataRecieveError(_ error: Error) {
+    func vvIPCDataRecieveError() {
         
     }
 
@@ -38,13 +38,14 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
     }
 
     func testExample() {
-        let server = VVServer()
-        server.start()
+//        let server = VVIPCUITest()
+        VVIPCUITest.shared.start()
         sleep(1)
-        let client = VVClient()
-        client.connect(delegate: self)
+        
+        VVIPC.shared.connect(delegate: self)
 //        client.checkClientReceive()
         sleep(1)
+        VVIPCUITest.shared.send("asdf")
 //        var str = ""
 //        for _ in 0..<100000 {
 //            str += "abcdefghij"
@@ -57,9 +58,9 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
 //        client.getFile("fil\"Hi") { str in
 //            print("aa \(str)")
 //        }
-        server.postNotification("networkNotification", userInfo: ["userId":"11223"])
-        server.postNotification("networkNotification", userInfo: ["userId":"11223", "uaaa": "bbb"])
-        server.postNotification("networkNotification")
+//        server.postNotification("networkNotification", userInfo: ["userId":"11223"])
+//        server.postNotification("networkNotification", userInfo: ["userId":"11223", "uaaa": "bbb"])
+//        server.postNotification("networkNotification")
         sleep(1)
         
     }
