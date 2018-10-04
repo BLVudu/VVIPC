@@ -27,7 +27,7 @@ extension VVIPCDelegate {
 }
 
 open class VVIPC: VVSocket {
-    static let shared = VVIPC()
+    public static let shared = VVIPC()
     weak var delegate: VVIPCDelegate? = nil
     
     open func connect(delegate: VVIPCDelegate?) {

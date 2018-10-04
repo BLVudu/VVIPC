@@ -28,7 +28,7 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
     func vvIPCDataRecieveError() {
         
     }
-
+    
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -39,13 +39,13 @@ class VVIPCTests: XCTestCase, VVIPCDelegate {
 
     func testExample() {
 //        let server = VVIPCUITest()
-        VVIPCUITest.shared.start()
+        VVIPCUITest.shared.start(delegate: self)
         sleep(1)
         
         VVIPC.shared.connect(delegate: self)
 //        client.checkClientReceive()
         sleep(1)
-        VVIPCUITest.shared.send("asdf")
+//        VVIPCUITest.shared.send("asdf")
 //        var str = ""
 //        for _ in 0..<100000 {
 //            str += "abcdefghij"

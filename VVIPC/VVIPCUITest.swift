@@ -18,7 +18,7 @@
 import Foundation
 open class VVIPCUITest: VVSocket {
     
-    static let shared = VVIPCUITest()
+    public static let shared = VVIPCUITest()
     var serverSocketFd: Int32 = -1
     
     open func start() {
@@ -131,7 +131,7 @@ open class VVIPCUITest: VVSocket {
     private func getBundlePath(_ fileName: String) -> String? {
         return Bundle(for: type(of: self) as AnyClass).path(forResource: fileName, ofType: "json")
     }
-    
+   
     override func dataReceived(_ data: Data) {
         guard let cmd = VVCommand(data: data) else {
             print("convert to vvCommand error")
@@ -139,21 +139,16 @@ open class VVIPCUITest: VVSocket {
         }
         
         if cmd.type == .getFile {
-            // TODO: get body's file name
+            
             print("filename: \(cmd.body)")
-            guard let bundlePath = self.getBundlePath(cmd.body) else {
-                print("file not found eroor")
-                // TODO: send to client
-                return
-            }
             
-            do {
-                let contents = try String(contentsOfFile: bundlePath)
+            guard let bundlePath = self.getBundlePath(cmd.body) else { return }
+            if let contents = try? String(contentsOfFile: bundlePath) {
                 self.send(contents, commandType: .gotFile, commandId: cmd.id)
-            } catch {
-                print("no contents error")
+            } else {
+                self.send("", commandType: .gotFile, commandId: cmd.id)
             }
-            
+
             return
         }
         
@@ -163,26 +158,7 @@ open class VVIPCUITest: VVSocket {
             self.commands[cmd.id] = nil
             return
         }
-        
-        // TODO:
-        
-        guard let str = String(data: data, encoding: .utf8) else {
-            print("server dataReceived error;")
-            return
-        }
-        
-        print("on server \(socket) dataReceived: \(str)")
-        
-        if str.hasPrefix("getFile|-|") {
-            let arr = str.components(separatedBy: "|-|")
-            
-            let fileName = arr[1]
-            print("getfile: \(fileName)")
-            self.send("gotFile|-|this is a file!!")
-            
-        } else {
-//            self.delegate?.vvIPCDataRecieve(str as String)
-        }
+        print("TODO: ")
     }
 
     open func postNotification(_ name: String, userInfo: [String: String] = [:]) {
