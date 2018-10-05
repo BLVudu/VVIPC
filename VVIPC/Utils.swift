@@ -45,6 +45,15 @@ let BUFFER_SIZE: Int = 1024 * 64
 let DELIMITER_START: String = "\u{01}"
 let DELIMITER_END: String = "\u{02}"
 let SOCKET_PORT: String = "14112"
+let SHOW_LOG: Bool = true
+func vvLog(_ msg: @autoclosure () -> String, caller: String = #function, file: String = #file, line: Int = #line) {
+    let fileName = file.split(separator: "/").last.flatMap { $0 } ?? ""
+    if SHOW_LOG {
+        print("\(fileName):\(caller) (\(line)) ==> \(msg())")
+    }
+}
+         
+
 
 public struct VVPostNotification {
     let name: String
@@ -58,7 +67,7 @@ public struct VVPostNotification {
         guard let data = str.data(using: .utf8) else { return nil }
         guard let jsonData = try? JSONSerialization.jsonObject(with: data, options: [])
         , let json = jsonData as? [String: Any] else {
-            print("jsonData error")
+            vvLog("jsonData error")
             return nil
         }
         
@@ -108,22 +117,22 @@ public struct VVCommand {
     
     init?(data: Data) {
         guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String] else {
-            print("convert to json error")
+            vvLog("convert to json error")
             return nil
         }
         
         guard let commandType = json?["commandType"].flatMap(CommandType.init) else {
-            print("convert commandType error")
+            vvLog("convert commandType error")
             return nil
         }
         
         guard let commandId = json?["commandId"] else {
-            print("convert commandId error")
+            vvLog("convert commandId error")
             return nil
         }
         
         guard let body = json?["body"] else {
-            print("convert body error")
+            vvLog("convert body error")
             return nil
         }
         

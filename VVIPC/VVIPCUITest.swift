@@ -23,17 +23,20 @@ open class VVIPCUITest: VVSocket {
     weak var delegate: VVIPCUITestDelegate? = nil
     
     open func start(delegate: VVIPCUITestDelegate? = nil) {
+
         self.delegate = delegate
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             guard let strongSelf = self else { return }
             do {
-                try strongSelf.createServerSocketAndListen()
-                print("server listening...")
+                if !(strongSelf.serverSocketFd > 0) {
+                    try strongSelf.createServerSocketAndListen()
+                    vvLog("server listening...")
+                }
                 
                 strongSelf.acceptingClientSocket()
-                print("accepted clientSocketFd: \(strongSelf.socketId), serverSocketFd: \(strongSelf.serverSocketFd)")
+                vvLog("accepted clientSocketFd: \(strongSelf.socketId), serverSocketFd: \(strongSelf.serverSocketFd)")
             } catch let err {
-                print(err)
+                fatalError(err.localizedDescription)
             }
         }
     }
@@ -49,7 +52,7 @@ open class VVIPCUITest: VVSocket {
             fatalError("serverSocketFd created error")
             
         }
-        print("server socket created: \(serverSocketFd)")
+        vvLog("server socket created: \(serverSocketFd)")
         
         try self.ignoreSIGPIPE(self.serverSocketFd)
         
@@ -77,7 +80,7 @@ open class VVIPCUITest: VVSocket {
             fatalError("server socket getting address error")
         }
         
-        print("status \(status)")
+        vvLog("status \(status)")
         
         var info = targetInfo
         
@@ -88,7 +91,7 @@ open class VVIPCUITest: VVSocket {
                 break
                 
             }
-            print("bind error! errno: \(errno)")
+            vvLog("bind error! errno: \(errno)")
             fatalError("next bind!!!!!!")
             
             info = info?.pointee.ai_next
@@ -111,7 +114,7 @@ open class VVIPCUITest: VVSocket {
                     
                     let fd = Darwin.accept(self.serverSocketFd, addrPointer, lengthPointer)
                     if fd < 0 {
-                        print("Error: Socket accept failed.")
+                        vvLog("Error: Socket accept failed.")
                         return
                     }
                     
@@ -121,8 +124,7 @@ open class VVIPCUITest: VVSocket {
                         
                         self.checkClientReceive()
                     } catch let err {
-                        print(err)
-                        return
+                        vvLog(err.localizedDescription)
                     }
                 }
             }
@@ -132,13 +134,13 @@ open class VVIPCUITest: VVSocket {
    
     override func dataReceived(_ data: Data) {
         guard let cmd = VVCommand(data: data) else {
-            print("convert to vvCommand error")
+            vvLog("convert to vvCommand error")
             return
         }
         
         if cmd.type == .getFile {
             
-            print("filename: \(cmd.body)")
+            vvLog("filename: \(cmd.body)")
             
             if let contents = self.delegate?.vvIPCGetFile(cmd.body) {
                 self.send(contents, commandType: .gotFile, commandId: cmd.id)
@@ -155,7 +157,7 @@ open class VVIPCUITest: VVSocket {
             self.commands[cmd.id] = nil
             return
         }
-        print("TODO: ")
+        vvLog("TODO: ")
     }
 
     open func postNotification(_ name: String, userInfo: [String: String] = [:]) {
@@ -166,7 +168,7 @@ open class VVIPCUITest: VVSocket {
     }
     
     open func shutdown() {
-        print("shutdown")
+        vvLog("shutdown")
         if self.serverSocketFd > 0 {
             _ = Darwin.shutdown(self.serverSocketFd, Int32(SHUT_RDWR))
         }
@@ -182,7 +184,7 @@ open class VVIPCUITest: VVSocket {
     
 
     deinit {
-        print("deinit server socket")
+        vvLog("deinit server socket")
         self.shutdown()
         
     }

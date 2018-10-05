@@ -48,19 +48,19 @@ open class VVSocket {
         let end: UInt8 = UInt8(DELIMITER_END.data(using: .utf8)![0])
         
         let currentBuffer: UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>.allocate(capacity: BUFFER_SIZE)
-        print("clientSocket: \(self.socketId)")
+        vvLog("clientSocket: \(self.socketId)")
         
         repeat {
             let recvCount = Darwin.recv(self.socketId, currentBuffer, BUFFER_SIZE, 0)
-            print("recvCount: \(recvCount) \(currentBuffer)")
+            vvLog("recvCount: \(recvCount) \(currentBuffer)")
             if recvCount < 0 {
-                print("Darwin.recv error errno\(Darwin.errno)")
+                vvLog("Darwin.recv error errno\(Darwin.errno) self._socket: \(self.socketId)")
                 self.socketId = -1
                 return
             }
             
             if recvCount == 0 {
-                print("Darwin.recv 0 self._socket: \(self.socketId)")
+                vvLog("Darwin.recv 0 self._socket: \(self.socketId)")
                 self.socketId = -1
                 return
             }
@@ -69,7 +69,7 @@ open class VVSocket {
             receivedData.append(currentBuffer, length: recvCount)
             
             guard let data =  NSMutableData(capacity: receivedData.length) else {
-                print("fatal error: creating NSMutableData error!")
+                vvLog("fatal error: creating NSMutableData error!")
                 return
             }
             
@@ -87,7 +87,7 @@ open class VVSocket {
                 }
             }
             
-            print("totalBu ffer: \(self.buf)")
+            vvLog("totalBu ffer: \(self.buf)")
             
         } while true
     }
@@ -98,7 +98,7 @@ open class VVSocket {
     
     open func send(_ str: String, commandType: CommandType = .message, commandId: String = "") {
         if self.socketId == -1 {
-            print("fatal error! _socket: \(self.socketId)")
+            vvLog("fatal error! _socket: \(self.socketId)")
             return
         }
         
@@ -108,7 +108,7 @@ open class VVSocket {
         let wrap = DELIMITER_START + json + DELIMITER_END
         wrap.utf8CString.withUnsafeBufferPointer() {
             let s = Darwin.send(socketId, $0.baseAddress!, $0.count - 1, 0)
-            print("s: \(s) __socket: \(socketId)")
+            vvLog("s: \(s) __socket: \(socketId)")
         }
     }
     

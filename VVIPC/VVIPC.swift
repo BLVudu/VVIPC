@@ -20,7 +20,7 @@ import Foundation
 // should be on main target
 extension VVIPCDelegate {
     public func vvIPCNotificationReceived(_ name: String, userInfo: [String: String]) {
-        print("post name: \(name) userInfoData: \(userInfo)")
+        vvLog("post name: \(name) userInfoData: \(userInfo)")
         
         NotificationCenter.default.post(name: Notification.Name(name), object: self, userInfo: userInfo)
     }
@@ -51,10 +51,10 @@ open class VVIPC: VVSocket {
         let info = targetInfo
         
         self.socketId = Darwin.socket(info!.pointee.ai_family, info!.pointee.ai_socktype, info!.pointee.ai_protocol)
-        print("self.clientSocket: \(self.socketId)")
+        vvLog("self.clientSocket: \(self.socketId)")
         try? self.ignoreSIGPIPE(self.socketId)
         status = Darwin.connect(self.socketId, info!.pointee.ai_addr, info!.pointee.ai_addrlen)
-        print("status: \(status) self.clientSocker: \(self.socketId)")
+        vvLog("status: \(status) self.clientSocker: \(self.socketId)")
         if targetInfo != nil {
             freeaddrinfo(targetInfo)
         }
@@ -64,7 +64,7 @@ open class VVIPC: VVSocket {
 
     open func getFile(_ fileName: String, callback: Callback? = nil) {
         if self.socketId == -1 {
-            print("fatal error! get file _socket: \(self.socketId)")
+            vvLog("fatal error! get file _socket: \(self.socketId)")
             return
         }
         
@@ -81,7 +81,7 @@ open class VVIPC: VVSocket {
     
     override func dataReceived(_ data: Data) {
         guard let cmd = VVCommand(data: data) else {
-            print("convert to vvCommand error")
+            vvLog("convert to vvCommand error")
             return
         }
         
@@ -93,7 +93,7 @@ open class VVIPC: VVSocket {
         
         if cmd.type == .postNotification {
             guard let p = VVPostNotification(cmd.body) else {
-                print("create VVPostNotification error")
+                vvLog("create VVPostNotification error")
                 return
             }
             
@@ -118,6 +118,6 @@ open class VVIPC: VVSocket {
     
     deinit {
         self.closeSocket()
-        print("vvclient deinit!!")
+        vvLog("vvclient deinit!!")
     }
 }
