@@ -25,16 +25,26 @@ open class VVIPCUITest: VVSocket {
     open func start(delegate: VVIPCUITestDelegate? = nil) {
 
         self.delegate = delegate
+        
+        if self.serverSocketFd > 0 {
+            vvLog("server soket started. no op!!!")
+            return
+        }
+        
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            guard let strongSelf = self else { return }
+
+            guard let strongSelf = self else {
+                vvLog("error serverSocketFd: \(String(describing: self?.serverSocketFd))")
+                return
+            }
+            
             do {
-                if !(strongSelf.serverSocketFd > 0) {
-                    try strongSelf.createServerSocketAndListen()
-                    vvLog("server listening...")
-                }
-                
-                strongSelf.acceptingClientSocket()
-                vvLog("accepted clientSocketFd: \(strongSelf.socketId), serverSocketFd: \(strongSelf.serverSocketFd)")
+                try strongSelf.createServerSocketAndListen()
+                repeat {
+                    vvLog("wait for acceptingClientSocket...")
+                    strongSelf.acceptingClientSocket()
+                    vvLog("accepted clientSocketFd: \(strongSelf.socketId), serverSocketFd: \(strongSelf.serverSocketFd)")
+                } while true
             } catch let err {
                 fatalError(err.localizedDescription)
             }
@@ -50,7 +60,6 @@ open class VVIPCUITest: VVSocket {
         self.serverSocketFd = Darwin.socket(Int32(AF_INET), SOCK_STREAM, Int32(IPPROTO_TCP))
         if self.serverSocketFd < 0 {
             fatalError("serverSocketFd created error")
-            
         }
         vvLog("server socket created: \(serverSocketFd)")
         
@@ -92,7 +101,7 @@ open class VVIPCUITest: VVSocket {
                 
             }
             vvLog("bind error! errno: \(errno)")
-            fatalError("next bind!!!!!!")
+            vvLog("fatal Error!!! next bind!!!!!!")
             
             info = info?.pointee.ai_next
         }
@@ -104,8 +113,6 @@ open class VVIPCUITest: VVSocket {
     }
     
     private func acceptingClientSocket() {
-        
-        
         var addrStorage = sockaddr_storage()
         var length = socklen_t(MemoryLayout.size(ofValue: addrStorage))
         withUnsafeMutablePointer(to: &addrStorage) {
@@ -113,12 +120,14 @@ open class VVIPCUITest: VVSocket {
                 withUnsafeMutablePointer(to: &length) { lengthPointer in
                     
                     let fd = Darwin.accept(self.serverSocketFd, addrPointer, lengthPointer)
+
                     if fd < 0 {
                         vvLog("Error: Socket accept failed.")
                         return
                     }
                     
                     do {
+                        // TODO: tread sanitizer will crash here. add print() solve it.
                         self.socketId = fd
                         try self.ignoreSIGPIPE(self.socketId)
                         

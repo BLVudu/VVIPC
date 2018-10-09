@@ -53,6 +53,10 @@ open class VVIPC: VVSocket {
         self.socketId = Darwin.socket(info!.pointee.ai_family, info!.pointee.ai_socktype, info!.pointee.ai_protocol)
         vvLog("self.clientSocket: \(self.socketId)")
         try? self.ignoreSIGPIPE(self.socketId)
+        guard self.socketId > 0 else {
+            fatalError("self.socketId error")
+        }
+        
         status = Darwin.connect(self.socketId, info!.pointee.ai_addr, info!.pointee.ai_addrlen)
         vvLog("status: \(status) self.clientSocker: \(self.socketId)")
         if targetInfo != nil {
@@ -104,8 +108,6 @@ open class VVIPC: VVSocket {
             self.delegate?.vvIPCDataRecieve(cmd.body)
             return
         }
-        
-        
     }
     
     func closeSocket() {

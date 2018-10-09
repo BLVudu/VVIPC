@@ -49,7 +49,7 @@ let SHOW_LOG: Bool = true
 func vvLog(_ msg: @autoclosure () -> String, caller: String = #function, file: String = #file, line: Int = #line) {
     let fileName = file.split(separator: "/").last.flatMap { $0 } ?? ""
     if SHOW_LOG {
-        print("\(fileName):\(caller) (\(line)) ==> \(msg())")
+        print("✳️\(fileName):\(caller) (\(line)) ==> \(msg())")
     }
 }
          
