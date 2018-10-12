@@ -126,15 +126,17 @@ open class VVIPCUITest: VVSocket {
                         return
                     }
                     
-                    do {
-                        // TODO: tread sanitizer will crash here. add print() solve it.
-                        self.socketId = fd
-                        try self.ignoreSIGPIPE(self.socketId)
-                        
-                        self.checkClientReceive()
-                    } catch let err {
-                        vvLog(err.localizedDescription)
+                    // avoid thread snitizer checker
+                    DispatchQueue.main.sync {
+                        do {
+                            self.socketId = fd
+                            try self.ignoreSIGPIPE(self.socketId)
+                        } catch let err {
+                            vvLog(err.localizedDescription)
+                        }
                     }
+                    
+                    self.checkClientReceive()
                 }
             }
         }
