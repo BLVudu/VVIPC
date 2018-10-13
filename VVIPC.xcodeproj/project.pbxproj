@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		093761092165A32C0075455F /* file1.json in Resources */ = {isa = PBXBuildFile; fileRef = 093761082165A32C0075455F /* file1.json */; };
 		0937610A2165A32C0075455F /* file1.json in Resources */ = {isa = PBXBuildFile; fileRef = 093761082165A32C0075455F /* file1.json */; };
+		094A300121722FFB00CB2987 /* VVCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094A300021722FFB00CB2987 /* VVCommand.swift */; };
+		094A300221722FFB00CB2987 /* VVCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094A300021722FFB00CB2987 /* VVCommand.swift */; };
+		094A300321722FFB00CB2987 /* VVCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094A300021722FFB00CB2987 /* VVCommand.swift */; };
+		094A300421722FFB00CB2987 /* VVCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094A300021722FFB00CB2987 /* VVCommand.swift */; };
 		0979EA732161C417006116D4 /* VVSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0979EA722161C417006116D4 /* VVSocket.swift */; };
 		0979EA742161C417006116D4 /* VVSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0979EA722161C417006116D4 /* VVSocket.swift */; };
 		0979EA752161C417006116D4 /* VVSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0979EA722161C417006116D4 /* VVSocket.swift */; };
@@ -52,6 +56,7 @@
 
 /* Begin PBXFileReference section */
 		093761082165A32C0075455F /* file1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = file1.json; sourceTree = "<group>"; };
+		094A300021722FFB00CB2987 /* VVCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VVCommand.swift; sourceTree = "<group>"; };
 		0979EA722161C417006116D4 /* VVSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VVSocket.swift; sourceTree = "<group>"; };
 		098539AB215EE13E00B96FB7 /* VVIPC_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVIPC_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		098539AD215EE13E00B96FB7 /* VVIPC_tvOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VVIPC_tvOS.h; sourceTree = "<group>"; };
@@ -152,6 +157,7 @@
 				098539C82160AC1600B96FB7 /* VVIPCUITest.swift */,
 				098539CF2160AC3C00B96FB7 /* VVIPC.swift */,
 				0979EA722161C417006116D4 /* VVSocket.swift */,
+				094A300021722FFB00CB2987 /* VVCommand.swift */,
 				09F6A69F215ED9D6005AABCC /* Info.plist */,
 			);
 			path = VVIPC;
@@ -344,6 +350,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				094A300321722FFB00CB2987 /* VVCommand.swift in Sources */,
 				098539CB2160AC1600B96FB7 /* VVIPCUITest.swift in Sources */,
 				098539D22160AC3C00B96FB7 /* VVIPC.swift in Sources */,
 				0979EA752161C417006116D4 /* VVSocket.swift in Sources */,
@@ -360,6 +367,7 @@
 				098539CC2160AC1600B96FB7 /* VVIPCUITest.swift in Sources */,
 				0979EA762161C417006116D4 /* VVSocket.swift in Sources */,
 				098539B9215EE13E00B96FB7 /* VVIPC_tvOSTests.swift in Sources */,
+				094A300421722FFB00CB2987 /* VVCommand.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,6 +375,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				094A300121722FFB00CB2987 /* VVCommand.swift in Sources */,
 				098539C92160AC1600B96FB7 /* VVIPCUITest.swift in Sources */,
 				098539D02160AC3C00B96FB7 /* VVIPC.swift in Sources */,
 				0979EA732161C417006116D4 /* VVSocket.swift in Sources */,
@@ -383,6 +392,7 @@
 				098539CA2160AC1600B96FB7 /* VVIPCUITest.swift in Sources */,
 				0979EA742161C417006116D4 /* VVSocket.swift in Sources */,
 				09F6A6AA215ED9D6005AABCC /* VVIPCTests.swift in Sources */,
+				094A300221722FFB00CB2987 /* VVCommand.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

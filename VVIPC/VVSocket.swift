@@ -97,7 +97,7 @@ open class VVSocket {
     }
     
     open func send(_ str: String, commandType: CommandType = .message, commandId: String = "") {
-        if self.socketId == -1 {
+        guard self.socketId > 0 else {
             vvLog("fatal error! _socket: \(self.socketId)")
             return
         }
